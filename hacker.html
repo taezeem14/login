@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TAEZEEM | Hacker Terminal</title>
+  <style>
+    body {
+      background: black;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+      font-size: 16px;
+      overflow-y: scroll;
+    }
+
+    #terminal {
+      width: 100%;
+      height: 90vh;
+      outline: none;
+      white-space: pre-wrap;
+      overflow-y: auto;
+    }
+
+    .title {
+      margin-bottom: 15px;
+      color: #00d0ff;
+    }
+  </style>
+</head>
+<body>
+
+  <h2 class="title">💻 TAEZEEM'S TERMINAL — Type Real Commands</h2>
+  
+  <div contenteditable="true" id="terminal" spellcheck="false">
+root@taezeem:~# █
+  </div>
+
+  <script>
+    const terminal = document.getElementById("terminal");
+
+    terminal.focus();
+
+    terminal.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+
+        let lines = terminal.innerText.trim().split("\n");
+        let lastLine = lines[lines.length - 1].replace("root@taezeem:~# ", "").trim();
+
+        let response = "";
+
+        switch (lastLine.toLowerCase()) {
+          case "ls":
+            response = "Documents  Downloads  school_project.txt  scripts  secret.log";
+            break;
+          case "pwd":
+            response = "/home/taezeem";
+            break;
+          case "whoami":
+            response = "taezeem";
+            break;
+          case "nmap":
+            response = "Starting Nmap 7.93\nScanning localhost (127.0.0.1)...\nPORT   STATE SERVICE\n22/tcp open  ssh\n80/tcp open  http\n443/tcp open  https\nNmap done.";
+            break;
+          case "clear":
+            terminal.innerText = "root@taezeem:~# ";
+            return; // no need to append response
+          default:
+            response = `bash: ${lastLine}: command not found`;
+        }
+
+        // Append simulated response + new prompt
+        terminal.innerText += `\n${response}\nroot@taezeem:~# `;
+        
+        // Move cursor to end
+        placeCaretAtEnd(terminal);
+      }
+    });
+
+    function placeCaretAtEnd(el) {
+      el.focus();
+      if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+        let range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        let sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+  </script>
+
+</body>
+</html>
