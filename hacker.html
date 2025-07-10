@@ -29,14 +29,13 @@
 <body>
 
   <h2 class="title">💻 TAEZEEM'S TERMINAL — Type Real Commands</h2>
-  
+
   <div contenteditable="true" id="terminal" spellcheck="false">
 root@taezeem:~# █
   </div>
 
   <script>
     const terminal = document.getElementById("terminal");
-
     terminal.focus();
 
     terminal.addEventListener("keydown", function(e) {
@@ -45,13 +44,24 @@ root@taezeem:~# █
 
         let lines = terminal.innerText.trim().split("\n");
         let lastLine = lines[lines.length - 1].replace("root@taezeem:~# ", "").trim();
-
         let response = "";
 
+        if (lastLine.toLowerCase() === "ls") {
+          fetch("https://api.github.com/repos/tinni4343/login/contents/")
+            .then(res => res.json())
+            .then(data => {
+              response = data.map(file => file.name).join("    ");
+              terminal.innerText += `\n${response}\nroot@taezeem:~# `;
+              placeCaretAtEnd(terminal);
+            })
+            .catch(err => {
+              terminal.innerText += `\n[Error] Couldn't fetch repo files.\nroot@taezeem:~# `;
+              placeCaretAtEnd(terminal);
+            });
+          return;
+        }
+
         switch (lastLine.toLowerCase()) {
-          case "ls":
-            response = "Documents  Downloads  school_project.txt  scripts  secret.log";
-            break;
           case "pwd":
             response = "/home/taezeem";
             break;
@@ -59,19 +69,16 @@ root@taezeem:~# █
             response = "taezeem";
             break;
           case "nmap":
-            response = "Starting Nmap 7.93\nScanning localhost (127.0.0.1)...\nPORT   STATE SERVICE\n22/tcp open  ssh\n80/tcp open  http\n443/tcp open  https\nNmap done.";
+            response = "Starting Nmap...\nScanning localhost...\n22/tcp open ssh\n80/tcp open http\n443/tcp open https\nDone.";
             break;
           case "clear":
             terminal.innerText = "root@taezeem:~# ";
-            return; // no need to append response
+            return;
           default:
             response = `bash: ${lastLine}: command not found`;
         }
 
-        // Append simulated response + new prompt
         terminal.innerText += `\n${response}\nroot@taezeem:~# `;
-        
-        // Move cursor to end
         placeCaretAtEnd(terminal);
       }
     });
