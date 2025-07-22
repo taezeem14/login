@@ -1,115 +1,81 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Taezeem's Login</title>
+  <title>Login</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #0f52ba, #00ff88);
-      color: white;
+      background: linear-gradient(to bottom right, #0f52ba, #00ff88); /* Blue to Green */
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      text-align: center;
+      color: white;
     }
-    .hidden { display: none; }
-    .login-box, .box {
-      background: white;
+
+    .login-box {
+      background-color: white;
       color: #0f52ba;
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
-      width: 90%;
-      max-width: 500px;
+      width: 320px;
+      text-align: center;
     }
-    input, button {
+
+    .login-box h2 {
+      margin-bottom: 25px;
+    }
+
+    .login-box input {
       width: 90%;
       padding: 12px;
       margin: 10px 0;
-      border-radius: 10px;
       border: 2px solid #0f52ba;
+      border-radius: 10px;
       outline: none;
     }
-    button {
+
+    .login-box button {
       background-color: #00c27a;
       color: white;
-      font-weight: bold;
+      padding: 12px 20px;
       border: none;
+      border-radius: 10px;
       cursor: pointer;
+      font-weight: bold;
+      margin-top: 15px;
+      width: 100%;
     }
-    button:hover {
+
+    .login-box button:hover {
       background-color: #00a369;
     }
-    .tag { color: #00c27a; font-weight: bold; }
-    .secret {
-      color: #0f52ba;
-      text-decoration: underline;
-      cursor: pointer;
-    }
-    .secret:hover {
-      color: #ff0000;
-      text-shadow: 0 0 5px #fff;
+
+    #loader {
+      display: none;
+      margin-top: 15px;
+      color: #00a369;
     }
   </style>
 </head>
 <body>
 
-  <!-- Login Section -->
-  <div id="loginSection" class="login-box hidden">
+  <div class="login-box">
     <h2>Login</h2>
     <form onsubmit="return redirectUser()">
-      <input type="text" id="username" placeholder="Username" required><br>
-      <input type="password" id="password" placeholder="Password" required><br>
+      <input type="text" id="username" placeholder="Username" required /><br>
+      <input type="password" id="password" placeholder="Password" required /><br>
       <button type="submit">Log In</button>
     </form>
-    <div id="loader" class="hidden">🔄 Logging you in...</div>
-  </div>
-
-  <!-- Website Section -->
-  <div id="websiteSection" class="box hidden">
-    
-
-  <div class="box">
-    <h1>Yo! I'm <span class="tag">Muhammad Taezeem Tariq Matta</span> 👑</h1>
-    <p>📚 I study in <span class="secret" onclick="secret2Activated()" ><strong>SRM Welkin Higher Secondary School, Sopore</strong></span></p>
-    <p>🎓 Grade: <strong>7th</strong></p>
-    <p>💻 I love <span class="tag">coding</span>, especially <span class="tag">cybersecurity</span> and <span class="tag">ethical hacking</span></p>
-    <p>⚽ And yeah — <strong>Cristiano Ronaldo is the GOAT 🐐</strong></p>
-    <p>🔥 Powered by <span class="secret" onclick="secretActivated()">pure hustle</span>, high IQ, and a bit of caffeine (lol)</p>
-  </div>
-
-    <script>
-    function secretActivated() {
-      alert("🧠 This site is part of my masterplan.\nBuilt by Taezeem for learning, hacking, and world domination 🌍💻");
-    }
-
-    function secret2Activated() {
-      window.open("https://www.srmwelkin.com", "_blank");
-    }
-
-    // Keyboard shortcut: T + H = HACKER MODE
-    let keysPressed = {};
-
-    document.addEventListener('keydown', (event) => {
-      keysPressed[event.key.toLowerCase()] = true;
-
-      if (keysPressed['t'] && keysPressed['h']) {
-        alert("🕶️ Entering HACKER MODE... Loading secret terminal");
-        window.location.href = "hacker.html"; // Make this page!
-      }
-    });
-
-    document.addEventListener('keyup', (event) => {
-      delete keysPressed[event.key.toLowerCase()];
-    });
-  </script>
-
+    <div id="loader">🔄 Logging you in...</div>
   </div>
 
   <script>
@@ -117,57 +83,23 @@
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      if (username === "taezeem" && password === "12345") {
-        document.getElementById("loader").classList.remove("hidden");
+      const fakeUser = "taezeem";
+      const fakePass = "12345";
+
+      if (username === fakeUser && password === fakePass) {
+        alert("✅ Login successful!");
+        document.getElementById("loader").style.display = "block";
+
         setTimeout(() => {
-          window.location.hash = "#website";
-        }, 1500);
+          window.location.href = "welcome.html";
+        }, 2000);
       } else {
         alert("❌ Wrong username or password, try again!");
       }
+
       return false;
     }
-
-    function secretActivated() {
-      alert("🧠 This site is part of my masterplan.\nBuilt by Taezeem for learning, hacking, and world domination 🌍💻");
-    }
-
-    function secret2Activated() {
-      window.open("https://www.srmwelkin.com", "_blank");
-    }
-
-    function checkHashRoute() {
-      const hash = window.location.hash;
-      const login = document.getElementById("loginSection");
-      const site = document.getElementById("websiteSection");
-
-      if (hash === "#website") {
-        login.classList.add("hidden");
-        site.classList.remove("hidden");
-      } else {
-        site.classList.add("hidden");
-        login.classList.remove("hidden");
-        if (!hash || hash === "#") {
-          window.location.hash = "#login";
-        }
-      }
-    }
-
-    window.addEventListener("hashchange", checkHashRoute);
-    window.addEventListener("DOMContentLoaded", checkHashRoute);
-
-    // T + H = hacker mode
-    let keysPressed = {};
-    document.addEventListener('keydown', (e) => {
-      keysPressed[e.key.toLowerCase()] = true;
-      if (keysPressed['t'] && keysPressed['h']) {
-        alert("🕶️ Entering HACKER MODE... Loading secret terminal");
-        window.location.href = "hacker.html";
-      }
-    });
-    document.addEventListener('keyup', (e) => {
-      delete keysPressed[e.key.toLowerCase()];
-    });
   </script>
+
 </body>
 </html>
