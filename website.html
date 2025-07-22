@@ -62,13 +62,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
-
-<script>
-  if (location.pathname.endsWith("website.html")) {
-    location.replace("index.html#website");
-  }
-</script>
-
 </head>
 <body>
 
@@ -81,30 +74,15 @@
     <p>🔥 Powered by <span class="secret" onclick="secretActivated()">pure hustle</span>, high IQ, and a bit of caffeine (lol)</p>
   </div>
 
-    <script>
+  <script>
     function secretActivated() {
-      alert("🧠 This site is part of my masterplan.\nBuilt by Taezeem for learning, hacking, and world domination 🌍💻");
+  alert("🧠 This site is part of my masterplan.\nBuilt by Taezeem for learning, hacking, and world domination 🌍💻");
+}
     }
-
     function secret2Activated() {
-      window.open("https://www.srmwelkin.com", "_blank");
-    }
-
-    // Keyboard shortcut: T + H = HACKER MODE
-    let keysPressed = {};
-
-    document.addEventListener('keydown', (event) => {
-      keysPressed[event.key.toLowerCase()] = true;
-
-      if (keysPressed['t'] && keysPressed['h']) {
-        alert("🕶️ Entering HACKER MODE... Loading secret terminal");
-        window.location.href = "hacker.html"; // Make this page!
-      }
-    });
-
-    document.addEventListener('keyup', (event) => {
-      delete keysPressed[event.key.toLowerCase()];
-    });
+  window.open("https://www.srmwelkin.com", "_blank");
+}
   </script>
+
 </body>
 </html>
