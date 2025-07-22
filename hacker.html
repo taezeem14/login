@@ -1,100 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>TAEZEEM | Hacker Terminal</title>
+  <meta charset="UTF-8">
+  <title>Hacking...</title>
   <style>
     body {
+      margin: 0;
       background: black;
-      color: #00ff00;
-      font-family: 'Courier New', monospace;
-      padding: 20px;
-      font-size: 16px;
-      overflow-y: scroll;
+      overflow: hidden;
     }
-
-    #terminal {
-      width: 100%;
-      height: 90vh;
-      outline: none;
-      white-space: pre-wrap;
-      overflow-y: auto;
-    }
-
-    .title {
-      margin-bottom: 15px;
-      color: #00d0ff;
+    canvas {
+      display: block;
     }
   </style>
 </head>
 <body>
 
-  <h2 class="title">💻 TAEZEEM'S TERMINAL — Type Real Commands</h2>
+<canvas id="matrix"></canvas>
 
-  <div contenteditable="true" id="terminal" spellcheck="false">
-root@taezeem:~# █
-  </div>
+<script>
+  const canvas = document.getElementById("matrix");
+  const ctx = canvas.getContext("2d");
 
-  <script>
-    const terminal = document.getElementById("terminal");
-    terminal.focus();
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
 
-    terminal.addEventListener("keydown", function(e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
+  const letters = "アァイィウヴエェオカガキギクグケゲコゴサザシジスズセゼソゾタダチッヂツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワヲンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const fontSize = 14;
+  const columns = canvas.width / fontSize;
 
-        let lines = terminal.innerText.trim().split("\n");
-        let lastLine = lines[lines.length - 1].replace("root@taezeem:~# ", "").trim();
-        let response = "";
+  const drops = Array.from({ length: columns }).fill(1);
 
-        if (lastLine.toLowerCase() === "ls") {
-          fetch("https://api.github.com/repos/tinni4343/login/contents/")
-            .then(res => res.json())
-            .then(data => {
-              response = data.map(file => file.name).join("    ");
-              terminal.innerText += `\n${response}\nroot@taezeem:~# `;
-              placeCaretAtEnd(terminal);
-            })
-            .catch(err => {
-              terminal.innerText += `\n[Error] Couldn't fetch repo files.\nroot@taezeem:~# `;
-              placeCaretAtEnd(terminal);
-            });
-          return;
-        }
+  function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        switch (lastLine.toLowerCase()) {
-          case "pwd":
-            response = "/home/taezeem";
-            break;
-          case "whoami":
-            response = "taezeem";
-            break;
-          case "nmap":
-            response = "Starting Nmap...\nScanning localhost...\n22/tcp open ssh\n80/tcp open http\n443/tcp open https\nDone.";
-            break;
-          case "clear":
-            terminal.innerText = "root@taezeem:~# ";
-            return;
-          default:
-            response = `bash: ${lastLine}: command not found`;
-        }
+    ctx.fillStyle = "#0F0";
+    ctx.font = fontSize + "px monospace";
 
-        terminal.innerText += `\n${response}\nroot@taezeem:~# `;
-        placeCaretAtEnd(terminal);
+    for (let i = 0; i < drops.length; i++) {
+      const text = letters.charAt(Math.floor(Math.random() * letters.length));
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
       }
-    });
 
-    function placeCaretAtEnd(el) {
-      el.focus();
-      if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
-        let range = document.createRange();
-        range.selectNodeContents(el);
-        range.collapse(false);
-        let sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
+      drops[i]++;
     }
-  </script>
+  }
 
-</body>
-</html>
+  let interval = setInterval(drawMatrix, 33);
+
+  // Show "TAEZEEM" in ASCII Matrix style after 2 seconds
+  setTimeout(() => {
+    clearInterval(interval);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#0F0";
+    ctx.font = "80px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("TAEZEEM", canvas.width / 2, canvas.height / 2);
+  },
