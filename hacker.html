@@ -2,78 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Matrix Hack</title>
+  <title>Matrix - Taezeem Only</title>
   <style>
     body {
       margin: 0;
       background: black;
       overflow: hidden;
-      color: #00ff00;
-      font-family: 'Courier New', monospace;
     }
 
     canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 0;
-    }
-
-    #terminal {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      z-index: 1;
-      font-size: 16px;
-      white-space: pre-wrap;
+      display: block;
     }
   </style>
 </head>
 <body>
-<canvas id="matrix"></canvas>
-<div id="terminal"></div>
-
-<audio id="typing" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
-<audio id="granted" src="https://www.soundjay.com/button/beep-09.wav" preload="auto"></audio>
+<canvas id="matrixCanvas"></canvas>
 
 <script>
-  const canvas = document.getElementById("matrix");
+  const canvas = document.getElementById("matrixCanvas");
   const ctx = canvas.getContext("2d");
 
-  canvas.height = window.innerHeight;
   canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-  const letters = "アァイィウヴエェオカガキギクグケゲコゴABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  const fontSize = 16;
+  const fontSize = 18;
   const columns = Math.floor(canvas.width / fontSize);
   const drops = Array(columns).fill(1);
+  let useName = false;
 
-  let showingName = false;
-  const name = "TAEZEEM";
-  const nameCols = [];
-  const nameStartCol = Math.floor(columns / 2 - name.length / 2);
+  const letters = "アァイィウヴエェオカガキギクグケゲコゴABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const taezeemChars = "TAEZEEM";
 
-  for (let i = 0; i < name.length; i++) {
-    nameCols.push({
-      col: nameStartCol + i,
-      char: name[i],
-      y: 0
-    });
-  }
-
-  function drawMatrix() {
+  function draw() {
     ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#0F0";
+    ctx.fillStyle = "#00FF00";
     ctx.font = fontSize + "px monospace";
 
     for (let i = 0; i < columns; i++) {
-      const char = letters.charAt(Math.floor(Math.random() * letters.length));
+      const text = useName
+        ? taezeemChars[Math.floor(Math.random() * taezeemChars.length)]
+        : letters[Math.floor(Math.random() * letters.length)];
+
       const x = i * fontSize;
       const y = drops[i] * fontSize;
 
-      ctx.fillText(char, x, y);
+      ctx.fillText(text, x, y);
 
       if (y > canvas.height && Math.random() > 0.975) {
         drops[i] = 0;
@@ -81,70 +56,14 @@
 
       drops[i]++;
     }
-
-    if (showingName) {
-      ctx.fillStyle = "#0F0";
-      nameCols.forEach(n => {
-        ctx.fillText(n.char, n.col * fontSize, n.y);
-        n.y += fontSize;
-        if (n.y > canvas.height) n.y = 0;
-      });
-    }
   }
 
-  const interval = setInterval(drawMatrix, 33);
+  setInterval(draw, 30);
 
-  // Terminal typing effect
-  const terminal = document.getElementById("terminal");
-  const typing = document.getElementById("typing");
-  const granted = document.getElementById("granted");
-
-  const lines = [
-    "Accessing mainframe...",
-    "Bypassing firewall...",
-    "Injecting payload...",
-    "Establishing secure connection...",
-    "Access Granted ✅"
-  ];
-
-  let lineIndex = 0;
-  let charIndex = 0;
-
-  function typeLine() {
-    if (lineIndex >= lines.length) {
-      granted.play();
-      showingName = true;
-      return;
-    }
-
-    const currentLine = lines[lineIndex];
-    terminal.innerHTML += currentLine.charAt(charIndex);
-    typing.play();
-
-    charIndex++;
-
-    if (charIndex < currentLine.length) {
-      setTimeout(typeLine, 80);
-    } else {
-      terminal.innerHTML += "\n";
-      charIndex = 0;
-      lineIndex++;
-      setTimeout(typeLine, 500);
-    }
-  }
-
-  setTimeout(typeLine, 1000);
-
-  // Show name in matrix after 4s
+  // 💥 After 2 seconds, switch to "TAEZEEM" only
   setTimeout(() => {
-    showingName = true;
-  }, 4000);
-
-  // Close after 9s
-  setTimeout(() => {
-    clearInterval(interval);
-    window.close(); // Only works if this was opened via JavaScript
-  }, 9000);
+    useName = true;
+  }, 2000);
 </script>
 </body>
 </html>
