@@ -58,12 +58,18 @@
     }
   }
 
+  // ⏱ Matrix interval
   setInterval(draw, 30);
 
-  // 💥 After 2 seconds, switch to "TAEZEEM" only
+  // 🟢 After 2 seconds: only show "TAEZEEM"
   setTimeout(() => {
     useName = true;
   }, 2000);
+
+  // 🔒 Auto-close after 30 seconds
+  setTimeout(() => {
+    window.open('', '_self').close(); // Most reliable method
+  }, 30000);
 </script>
 </body>
 </html>
