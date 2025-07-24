@@ -68,7 +68,7 @@
   <div class="box">
     <h1>Yo! I'm <span class="tag">Muhammad Taezeem Tariq Matta</span> 👑</h1>
     <p>📚 I study in <span class="secret" onclick="secret2Activated()" ><strong>SRM Welkin Higher Secondary School, Sopore</strong></span></p>
-    <p>🎓 Grade: <strong>7th</strong></p>
+    <p>🎓 Grade: <strong><span id="grade"></span>th</strong></p>
     <p>💻 I love <span class="tag">coding</span>, especially <span class="tag">cybersecurity</span> and <span class="tag">ethical hacking</span></p>
     <p>⚽ And yeah — <strong>Cristiano Ronaldo is the GOAT 🐐</strong></p>
     <p>🔥 Powered by <span class="secret" onclick="secretActivated()">pure hustle</span>, high IQ, and a bit of caffeine (lol)</p>
@@ -98,7 +98,15 @@ const popup = window.open("hacker.html", "_blank", "width=800,height=600");
     document.addEventListener('keyup', (event) => {
       delete keysPressed[event.key.toLowerCase()];
     });
-  </script>
+      // Auto-update grade based on year
+(function () {
+  const startGrade = 7; // your current grade
+  const startYear = 2025; // the year you're in 7th grade
+  const currentYear = new Date().getFullYear();
+  const grade = startGrade + (currentYear - startYear);
+  document.getElementById("grade").textContent = grade;
+})();
 
+  </script>
 </body>
 </html>
