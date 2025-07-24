@@ -67,14 +67,14 @@
 
   <div class="box">
     <h1>Yo! I'm <span class="tag">Muhammad Taezeem Tariq Matta</span> 👑</h1>
-    <p>📚 I study in <span class="secret" onclick="secret2Activated()" ><strong>SRM Welkin Higher Secondary School, Sopore</strong></span></p>
-    <p>🎓 Grade: <strong><span id="grade"></span>th</strong></p>
+    <p class="school-line">📚 I study in <span class="secret" onclick="secret2Activated()" ><strong>SRM Welkin Higher Secondary School, Sopore</strong></span></p>
+    <p id="grade-line">🎓 Grade: <strong><span id="grade">7</span>th</strong></p>
     <p>💻 I love <span class="tag">coding</span>, especially <span class="tag">cybersecurity</span> and <span class="tag">ethical hacking</span></p>
     <p>⚽ And yeah — <strong>Cristiano Ronaldo is the GOAT 🐐</strong></p>
     <p>🔥 Powered by <span class="secret" onclick="secretActivated()">pure hustle</span>, high IQ, and a bit of caffeine (lol)</p>
   </div>
 
-    <script>
+  <script>
     function secretActivated() {
       alert("🧠 This site is part of my masterplan.\nBuilt by Taezeem for learning, hacking, and world domination 🌍💻");
     }
@@ -84,29 +84,44 @@
     }
 
     let keysPressed = {};
-
     document.addEventListener('keydown', (event) => {
       keysPressed[event.key.toLowerCase()] = true;
-
       if (keysPressed['t'] && keysPressed['h']) {
         alert("🕶️ Entering HACKER MODE... Loading secret terminal");
-const popup = window.open("hacker.html", "_blank", "width=800,height=600");
-
+        window.open("hacker.html", "_blank", "width=800,height=600");
       }
     });
 
     document.addEventListener('keyup', (event) => {
       delete keysPressed[event.key.toLowerCase()];
     });
-      // Auto-update grade based on year
-(function () {
-  const startGrade = 7; // your current grade
-  const startYear = 2025; // the year you're in 7th grade
-  const currentYear = new Date().getFullYear();
-  const grade = startGrade + (currentYear - startYear);
-  document.getElementById("grade").textContent = grade;
-})();
 
+    // 🎓 Auto-Update Grade Script
+    (function () {
+      const startGrade = 7;
+      const startYear = 2025;
+      const maxGrade = 12;
+
+      const currentYear = new Date().getFullYear();
+      let grade = startGrade + (currentYear - startYear);
+
+      const gradeElement = document.getElementById("grade-line");
+      const schoolLine = document.querySelector(".school-line");
+
+      if (grade > maxGrade) {
+        // After 12th
+        if (gradeElement) gradeElement.remove();
+        if (schoolLine) {
+          schoolLine.innerHTML = '📚 I <strong>studied</strong> in <span class="secret" onclick="secret2Activated()">SRM Welkin Higher Secondary School, Sopore</span>';
+        }
+      } else {
+        // Update grade normally
+        if (gradeElement) {
+          document.getElementById("grade").textContent = grade;
+        }
+      }
+    })();
   </script>
+
 </body>
 </html>
