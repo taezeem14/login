@@ -73,6 +73,17 @@
     <p>⚽ And yeah — <strong>Cristiano Ronaldo is the GOAT 🐐</strong></p>
     <p>🔥 Powered by <span class="secret" onclick="secretActivated()">pure hustle</span>, high IQ, and a bit of caffeine (lol)</p>
   </div>
+ 
+<div id="mobileHackerZone" onclick="triggerHackerMode()" style="
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  width: 30px;
+  height: 30px;
+  z-index: 999;
+  opacity: 0.01; /* Almost invisible */
+  background: transparent;
+"> </div>
 
   <script>
     function secretActivated() {
@@ -82,6 +93,11 @@
     function secret2Activated() {
       window.open("https://www.srmwelkin.com", "_blank");
     }
+    
+    function triggerHackerMode() {
+  alert("📱 Secret Hacker Mode Triggered on Mobile!");
+  window.open("hacker.html", "_blank", "width=800,height=600");
+}
 
     let keysPressed = {};
     document.addEventListener('keydown', (event) => {
