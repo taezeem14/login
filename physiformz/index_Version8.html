@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhysiFormz - Physics Formula Finder</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .app {
+      text-align: center;
+      background: #1e293b;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      max-width: 500px;
+      width: 90%;
+    }
+    input {
+      padding: 0.7rem;
+      border-radius: 0.5rem;
+      border: none;
+      width: 80%;
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+    button {
+      padding: 0.7rem 1.2rem;
+      margin-top: 1rem;
+      border: none;
+      background: #0ea5e9;
+      color: white;
+      font-weight: bold;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+    #resultCard {
+      margin-top: 2rem;
+      text-align: left;
+      background: #334155;
+      padding: 1rem;
+      border-radius: 1rem;
+    }
+    code {
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 1.05em;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #475569;
+      margin: 1em 0;
+    }
+    .desc {
+      color: #94a3b8;
+      font-size: 0.98em;
+      margin-top: 3px;
+      margin-bottom: 15px;
+    }
+    a {
+      color: #0ea5e9;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .suggestion {
+      background: #fbbf24;
+      color: #1e293b;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 8px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>⚛️ PhysiFormz</h1>
+    <input type="text" id="searchInput" placeholder="Enter physics topic (e.g. Pressure)" />
+    <button id="searchBtn">Search</button>
+    <div id="resultCard"></div>
+  </div>
+
+  <script>
+    const WOLFRAM_APP_ID = "8GWUHU49QA";
+
+    // Expandable formula database
+    const formulaDB = {
+      "pressure": [
+        {
+          name: "Pressure",
+          formula: "P = F / A",
+          description: "Pressure (P) is the force (F) applied per unit area (A)."
+        }
+      ],
+      "momentum": [
+        {
+          name: "Momentum",
+          formula: "p = m v",
+          description: "Momentum (p) is the product of mass (m) and velocity (v); it is a vector quantity."
+        }
+      ],
+      "taylor series": [
+        {
+          name: "Taylor Series Expansion",
+          formula: "f(x) = f(a) + f'(a)(x−a) + [f''(a)/2!](x−a)^2 + ... + [fⁿ(a)/n!](x−a)^n + ...",
+          description: "Expands a function f(x) in terms of its derivatives at point a."
+        }
+      ],
+      "ohm's law": [
+        {
+          name: "Ohm's Law",
+          formula: "V = I R",
+          description: "Voltage (V) equals current (I) times resistance (R)."
+        }
+      ],
+      "newton's second law": [
+        {
+          name: "Newton's Second Law",
+          formula: "F = m a",
+          description: "Force (F) equals mass (m) times acceleration (a)."
+        }
+      ],
+      "gravitational force": [
+        {
+          name: "Newton's Law of Gravitation",
+          formula: "F = G (m₁ m₂) / r²",
+          description: "Force (F) between masses m₁ and m₂ separated by distance r, with gravitational constant G."
+        }
+      ],
+      "snell's law": [
+        {
+          name: "Snell's Law",
+          formula: "n₁ sinθ₁ = n₂ sinθ₂",
+          description: "Describes refraction of light between two media with refractive indices n₁ and n₂."
+        }
+      ],
+      "kinematics": [
+        {
+          name: "First Equation of Motion",
+          formula: "v = u + a t",
+          description: "Final velocity (v) after time (t) for acceleration (a) from initial velocity (u)."
+        },
+        {
+          name: "Second Equation of Motion",
+          formula: "s = u t + ½ a t²",
+          description: "Displacement (s) after time (t) for acceleration (a) from initial velocity (u)."
+        },
+        {
+          name: "Third Equation of Motion",
+          formula: "v² = u² + 2 a s",
+          description: "Relates velocities, acceleration, and displacement."
+        }
+      ]
+      // Add more formulas as needed!
+    };
+
+    // Basic Levenshtein distance function for spelling correction
+    function levenshtein(a, b) {
+      const matrix = Array(a.length + 1).fill(null).map(() =>
+        Array(b.length + 1).fill(null)
+      );
+      for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
+      for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] + cost
+          );
+        }
+      }
+      return matrix[a.length][b.length];
+    }
+
+    // Find closest topic in formulaDB
+    function getClosestTopic(input) {
+      input = input.toLowerCase();
+      let minDist = Infinity;
+      let suggestion = null;
+      for (const topic of Object.keys(formulaDB)) {
+        const dist = levenshtein(input, topic);
+        if (dist < minDist) {
+          minDist = dist;
+          suggestion = topic;
+        }
+      }
+      // Only suggest if reasonably close (distance 1 or 2 for short words, up to 3 for longer)
+      if ((input.length <= 6 && minDist <= 2) ||
+          (input.length > 6 && minDist <= 3)) {
+        return suggestion;
+      }
+      return null;
+    }
+
+    async function fetchWolframShortAnswer(query) {
+      const url = `https://api.wolframalpha.com/v1/result?i=${encodeURIComponent(query)}&appid=${WOLFRAM_APP_ID}`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("No answer");
+        const text = await res.text();
+        return text;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    async function fetchWikipediaSummary(query) {
+      try {
+        const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
+        const data = await res.json();
+        if (data.extract) {
+          return {
+            title: data.title,
+            extract: data.extract,
+            url: `https://en.wikipedia.org/wiki/${encodeURIComponent(query)}`
+          };
+        }
+      } catch (err) {
+        return null;
+      }
+    }
+
+    const searchBtn = document.getElementById('searchBtn');
+    const resultCard = document.getElementById('resultCard');
+    const searchInput = document.getElementById('searchInput');
+
+    let lastSuggestion = null;
+
+    searchBtn.addEventListener('click', async () => {
+      let topicRaw = searchInput.value.trim();
+      if (!topicRaw) return alert('Enter a topic first, dawg 🧠');
+      let topic = topicRaw.toLowerCase();
+
+      // Spelling check for local formulas
+      const closest = getClosestTopic(topic);
+      if (closest && closest !== topic) {
+        // Offer suggestion
+        resultCard.innerHTML = `<p>Did you mean: <span class="suggestion" id="spellingSuggest">${closest}</span>?</p>`;
+        lastSuggestion = closest;
+        // Attach click handler for suggestion
+        document.getElementById('spellingSuggest').onclick = () => {
+          searchInput.value = closest;
+          resultCard.innerHTML = `<p>Loading formulaz & explanation...⏳</p>`;
+          searchBtn.click();
+        };
+        return;
+      }
+
+      lastSuggestion = null;
+      resultCard.innerHTML = '<p>Loading formulaz & explanation...⏳</p>';
+
+      // Try Wolfram Short Answer API
+      const wolframAnswer = await fetchWolframShortAnswer(topicRaw);
+
+      // Local formula DB
+      let formulaHtml = "";
+      if (formulaDB[topic]) {
+        formulaHtml = `<h2>Formula${formulaDB[topic].length > 1 ? "s" : ""} for ${topicRaw}</h2>` +
+          formulaDB[topic].map(f =>
+            `<div>
+              <b>${f.name}</b>: <code>${f.formula}</code>
+              <div class="desc">${f.description}</div>
+            </div>`
+          ).join('<hr>');
+      }
+
+      // Explanation: Wolfram or Wikipedia
+      let explanationHtml = "";
+      if (wolframAnswer && !wolframAnswer.toLowerCase().includes('no short answer available')) {
+        explanationHtml = `<h3>Explanation (Wolfram)</h3>
+          <div class="desc">${wolframAnswer}</div>
+          <a href="https://www.wolframalpha.com/input/?i=${encodeURIComponent(topicRaw)}" target="_blank">See on WolframAlpha ➤</a>`;
+      } else {
+        const wiki = await fetchWikipediaSummary(topicRaw);
+        if (wiki) {
+          explanationHtml = `<h3>Explanation (Wikipedia)</h3>
+            <div class="desc">${wiki.extract}</div>
+            <a href="${wiki.url}" target="_blank">Read More ➤</a>`;
+        }
+      }
+
+      // Show both, or fallback message
+      if (!formulaHtml && !explanationHtml) {
+        resultCard.innerHTML = `<p>No formula or explanation found for '${topicRaw}' 😔</p>`;
+      } else {
+        resultCard.innerHTML = formulaHtml + explanationHtml;
+      }
+    });
+
+    // Also trigger suggestion on Enter
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === "Enter") searchBtn.click();
+    });
+  </script>
+</body>
+</html>
