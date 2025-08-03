@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>1337 Translator: Ultimate Edition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: radial-gradient(ellipse at center, #22303c 0%, #1b2633 100%);
+      --panel-bg: #171922;
+      --radius: 20px;
+      --pink: #ff4fa8;
+      --cyan: #00ffd0;
+      --label-font: 'Space Grotesk', 'Share Tech Mono', monospace;
+      --body-font: 'Share Tech Mono', monospace;
+      --divider-height: 6px;
+      --divider-radius: 12px;
+      --footer-color: #00ffd0cc;
+      --dropdown-bg: #222a;
+      --dropdown-border: #00ffd055;
+      --dropdown-shadow: 0 0 14px #00ffd044;
+      --dropdown-hover: #ff4fa8cc;
+      --copy-bg: #333;
+      --copy-success: #42ffdd;
+      --copy-fail: #ff4fa8;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      font-family: var(--body-font);
+      color: #00ffd0;
+    }
+    body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: var(--body-font);
+  background: var(--bg);
+  color: #00ffd0;
+    } 
+    .container {
+  display: flex;
+  gap: 4rem;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 3rem 1rem 2rem 1rem;
+  flex-wrap: wrap;
+  z-index: 1;
+}
+    .panel {
+      background: var(--panel-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 0 40px 0 rgba(0,255,208,0.18);
+      width: 420px;
+      max-width: 96vw;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      padding: 2.6rem 2rem 2.6rem 2rem;
+      position: relative;
+      overflow: visible;
+      border: 2.5px solid var(--cyan);
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .panel.left {
+      border-color: var(--pink);
+      box-shadow: 0 0 48px 0 var(--pink);
+    }
+    .panel.right {
+      border-color: var(--cyan);
+      box-shadow: 0 0 48px 0 var(--cyan);
+    }
+    .label {
+      font-family: var(--label-font);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25em;
+      background: linear-gradient(90deg, #ff4fa8 0%, #00ffd0 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .accent {
+      color: var(--pink);
+      letter-spacing: 0.11em;
+      background: none;
+      -webkit-background-clip: unset;
+      background-clip: unset;
+      color: var(--pink);
+    }
+    .input-area, .output-area {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 14px;
+      background: #181828ee;
+      color: #00ffd0;
+      font-size: 1.06rem;
+      font-family: var(--body-font);
+      padding: 1.1rem 1rem;
+      border: none;
+      outline: none;
+      box-shadow: 0 2px 16px #00ffd03a;
+      margin: 0;
+      transition: background 0.3s, box-shadow 0.2s, color 0.2s;
+      resize: none;
+    }
+    .input-area:focus {
+      background: #23234a;
+      color: var(--pink);
+      box-shadow: 0 0 0 2.5px var(--pink);
+    }
+    .input-area::placeholder {
+      color: #00ffd08a;
+      font-family: 'Share Tech Mono', monospace;
+      opacity: 1;
+      font-size: 1rem;
+    }
+    .output-area {
+      min-height: 2.5em;
+      background: #181828ee;
+      color: #ff4fa8;
+      font-weight: 700;
+      word-break: break-word;
+      opacity: 0;
+      transform: translateY(10px) scale(0.98);
+      transition: opacity 0.35s, transform 0.35s, color 0.3s;
+      border: 1px solid #00ffd03a;
+      margin-top: 0.2rem;
+      font-size: 1.09rem;
+      user-select: text;
+    }
+    .output-area.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      animation: pop 0.55s cubic-bezier(.68,-0.55,.27,1.55) 1;
+    }
+    @keyframes pop {
+      0% { opacity: 0; transform: scale(0.9);}
+      70% { opacity: 0.7; transform: scale(1.05);}
+      100% { opacity: 1; transform: scale(1);}
+    }
+    .leet-multi {
+      margin-top: 1.2em;
+      padding: 0.5em 0.5em 0.2em 0.5em;
+      background: #202040f9;
+      border-radius: 8px;
+      box-shadow: 0 0 8px #00ffd04a;
+      border: 1.5px dashed #ff4fa8a0;
+      color: #fff;
+      font-size: 1.01rem;
+      font-family: var(--body-font);
+      margin-bottom:0.5em;
+      user-select: none;
+    }
+    .leet-multi-label {
+      color: var(--cyan);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.97rem;
+      margin-bottom: 0.4em;
+      display: block;
+    }
+    .leet-multi-variant {
+      margin: 0.16em 0.2em 0.16em 0;
+      padding: 0.18em 0.28em;
+      background: var(--dropdown-bg);
+      border-radius: 5px;
+      border: 1px solid var(--dropdown-border);
+      box-shadow: var(--dropdown-shadow);
+      cursor: pointer;
+      display: inline-block;
+      transition: background 0.15s, color 0.15s;
+      font-family: 'Share Tech Mono', monospace;
+      font-weight: 500;
+      position: relative;
+      user-select: none;
+    }
+    .leet-multi-variant:hover, .leet-multi-variant.copied {
+      background: var(--dropdown-hover);
+      color: #fff;
+    }
+    .leet-multi-variant.copied {
+      box-shadow: 0 0 8px var(--copy-success), 0 0 14px var(--copy-success);
+      border: 1px solid var(--copy-success);
+    }
+    .leet-multi-variant.fail {
+      box-shadow: 0 0 8px var(--pink), 0 0 14px var(--copy-fail);
+      border: 1px solid var(--copy-fail);
+    }
+    .leet-multi-variant .copy-tip {
+      position: absolute;
+      left: 50%;
+      top: -1.5em;
+      transform: translateX(-50%);
+      background: var(--copy-bg);
+      color: var(--cyan);
+      font-size: 0.89em;
+      border-radius: 4px;
+      padding: 0.15em 0.5em;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+      z-index: 10;
+    }
+    .leet-multi-variant.copied .copy-tip {
+      opacity: 1;
+      color: var(--copy-success);
+      background: #222;
+    }
+    .leet-multi-variant.fail .copy-tip {
+      opacity: 1;
+      color: var(--copy-fail);
+      background: #222;
+    }
+    .leet-multi-variant:hover .copy-tip {
+      opacity: 1;
+      color: var(--cyan);
+    }
+    @media (max-width: 1024px) {
+      .container {
+        flex-direction: column;
+        gap: 2.5rem;
+        padding: 2rem 0.5rem 1.5rem 0.5rem;
+      }
+      .panel {
+        width: 99vw;
+        max-width: 99vw;
+      }
+    }
+    footer {
+      flex-shrink: 0;
+      width: 100%;
+      text-align: center;
+      padding: 1.7rem 0 1.2rem 0;
+      background: transparent;
+      color: var(--footer-color);
+      font-size: 1.1rem;
+      font-family: var(--label-font);
+      letter-spacing: 0.09em;
+      font-weight: 700;
+      text-shadow: 0 0 8px #00ffd099;
+      user-select: none;
+      border-top: 2px dashed #00ffd055;
+    }
+    .footer-bar {
+      height: 5px;
+      width: 100%;
+      background: linear-gradient(90deg,#00ffd0,#ff4fa8,#42ffdd,#ff4fa8,#00ffd0);
+      background-size: 400% 100%;
+      animation: funkybar 4s linear infinite;
+      margin-bottom: -5px;
+      border-radius: 2.5px;
+      opacity: .8;
+      box-shadow: 0 0 18px #00ffd044;
+    }
+    @keyframes funkybar {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel left">
+      <div class="label"><span class="accent">Normal</span> → Leet</div>
+      <textarea class="input-area" id="normalInput" rows="3" placeholder="Type normal text here..."></textarea>
+      <div id="leetOutput" class="output-area" aria-live="polite"></div>
+      <div id="leetMultiOutput" class="leet-multi"></div>
+    </div>
+    <div class="panel right">
+      <div class="label"><span class="accent">Leet</span> → Normal</div>
+      <textarea class="input-area" id="leetInput" rows="3" placeholder="Type leet text here..."></textarea>
+      <div id="normalOutput" class="output-area" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="footer-bar"></div>
+  <footer>
+    Made by M.Taezeem
+  </footer>
+  <script>
+    const leetVariants = {
+      'a': ['4', '/\\', '@', '/-\\', '^', 'Λ', 'Д', 'α', 'aye', '|^'],
+      'b': ['8', '|3', '13', 'ß', 'P>', 'j3', 'I3', ']3', '6'],
+      'c': ['(', '<', '[', '{', '¢', '©'],
+      'd': ['|)', '[)', 'I>', '|o', 'cl', 'd', '])'],
+      'e': ['3', '&', '€', '£', 'ë', 'ε', '[-'],
+      'f': ['|=', 'ph', 'ƒ'],
+      'g': ['6', '9', '&', '(_+', 'gee'],
+      'h': ['#', '|-|', '[-]', ']-[', '(-)', ')-(', ':-:', '}{', '}-{', ']~[', 'h', '}{'],
+      'i': ['1', '!', '|', 'eye', '][', 'ī'],
+      'j': ['_|', '_/', '_7', '_)', '_]', '_', '¿'],
+      'k': ['|<', '|{', ']{', 'κ'],
+      'l': ['1', '|_', '|', '£', '7', '1_', 'L'],
+      'm': ['/\\/\\', '|\\/|', '[V]', '{V}', '(V)', '^^', 'em', 'И', 'nn', '11'],
+      'n': ['|\\|', '/\\/', '[\\]', '<\\>', '{\\}', '/V', 'И', '^/', 'ท'],
+      'o': ['0', '()', '[]', '{}', '<>', 'Ø', 'oh', '¤'],
+      'p': ['|*', '|o', '|>', '9', '[]D', '|7', 'p'],
+      'q': ['0_', 'kw', 'O_', '(_,)', 'q'],
+      'r': ['|2', '12', '.-', '|^', 'l2', 'Я', '[z]', '|`', '/'],
+      's': ['5', '$', 'z', '§', 'ehs', 'es'],
+      't': ['7', '+', '-|-', "']['", '†', '~|~', 't'],
+      'u': ['|_|', '(_)', 'V', 'L|', 'µ', 'บ', 'υ'],
+      'v': ['\\/', '|/', '\\|', '√', 'v'],
+      'w': ['\\/\\/', 'vv', '\\^/', '\\/\\/', '\\V/', '\\|/', 'VV', '\\\\', '2u', 'w', 'Ш', 'uu', 'vV'],
+      'x': ['><', '}{', ')(', 'ecks', '×', 'χ', '}{', ']['],
+      'y': ['`/', '¥', 'j', '7', 'y', 'Ч', 'Ψ'],
+      'z': ['2', 'z', '7_', '-/_', '%', '>_', 's', 'Z', '=/^'],
+    };
+
+    function toLeetWithDelimiter(text) {
+      return text.toLowerCase().split('').map(char =>
+        leetVariants[char] ? leetVariants[char][0] : char
+      ).join(' ');
+    }
+
+    function allLeetCombos(word) {
+      const chars = word.toLowerCase().split('');
+      const choices = chars.map(c => leetVariants[c] || [c]);
+      let combos = new Set();
+      let max = Math.min(10, Math.pow(choices.length, 2));
+      while(combos.size < max) {
+        combos.add(choices.map(arr => arr[Math.floor(Math.random() * arr.length)]).join(' '));
+      }
+      return Array.from(combos);
+    }
+
+    function fromLeetWithDelimiter(text) {
+      const allLeetMap = {};
+      Object.entries(leetVariants).forEach(([k, arr]) => {
+        arr.forEach(v => allLeetMap[v] = k);
+      });
+      return text.trim().split(/\s+/).map(piece =>
+        allLeetMap[piece] || piece
+      ).join('');
+    }
+
+    function debounce(fn, ms=200) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn.apply(this, args), ms);
+      };
+    }
+
+    const normalInput = document.getElementById("normalInput");
+    const leetOutput = document.getElementById("leetOutput");
+    const leetMultiOutput = document.getElementById("leetMultiOutput");
+    const leetInput = document.getElementById("leetInput");
+    const normalOutput = document.getElementById("normalOutput");
+
+    normalInput.addEventListener("input", debounce(() => {
+      const value = normalInput.value;
+      let combos = [];
+      leetMultiOutput.innerHTML = '';
+      if (value.trim().length && value.trim().split(/\s+/).length === 1) {
+        combos = allLeetCombos(value.trim());
+        if (combos.length > 1) {
+          leetMultiOutput.innerHTML = `
+            <span class="leet-multi-label">Other Leet Variants (tap to copy):</span>
+            ${combos.map(v =>
+              `<span class="leet-multi-variant" data-leet="${v}">
+                ${v}<span class="copy-tip">Tap to copy</span>
+              </span>`
+            ).join('')}
+          `;
+        }
+      }
+      const leet = combos.length ? combos[0] : toLeetWithDelimiter(value);
+      leetOutput.textContent = leet;
+      if (leet.length) leetOutput.classList.add('show');
+      else leetOutput.classList.remove('show');
+    }));
+
+    leetMultiOutput.addEventListener("click", function(e) {
+      const variant = e.target.closest('.leet-multi-variant');
+      if (variant && variant.dataset.leet) {
+        const text = variant.dataset.leet;
+        navigator.clipboard.writeText(text).then(() => {
+          variant.classList.add('copied');
+          variant.querySelector('.copy-tip').textContent = "Copied!";
+          setTimeout(() => {
+            variant.classList.remove('copied');
+            variant.querySelector('.copy-tip').textContent = "Tap to copy";
+          }, 1200);
+        }).catch(() => {
+          variant.classList.add('fail');
+          variant.querySelector('.copy-tip').textContent = "Failed!";
+          setTimeout(() => {
+            variant.classList.remove('fail');
+            variant.querySelector('.copy-tip').textContent = "Tap to copy";
+          }, 1200);
+        });
+      }
+    });
+
+    leetInput.addEventListener("input", debounce(() => {
+      const norm = fromLeetWithDelimiter(leetInput.value);
+      normalOutput.textContent = norm;
+      if (norm.length) normalOutput.classList.add('show');
+      else normalOutput.classList.remove('show');
+    }));
+
+    normalInput.addEventListener("blur", () => {
+      if (!normalInput.value.length) leetOutput.classList.remove('show');
+    });
+    leetInput.addEventListener("blur", () => {
+      if (!leetInput.value.length) normalOutput.classList.remove('show');
+    });
+  </script>
+</body>
+</html>
