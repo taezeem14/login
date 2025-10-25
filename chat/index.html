@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cyberpunk Neon Chatroom 🌆</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+:root {
+  --neon-primary: #0affff;
+  --neon-secondary: #ff00ea;
+  --bg-dark: #0a0f14;
+  --header-bg: #000d1a;
+  --glass: rgba(255,255,255,0.05);
+  --btn-radius: 8px;
+}
+
+/* Light theme overrides */
+[data-theme="light"] {
+  --neon-primary: #001f2a;
+  --neon-secondary: #6a0066;
+  --bg-dark: #f6f9fb;
+  --header-bg: #e6eef4;
+  color: var(--neon-primary);
+  --glass: rgba(0,0,0,0.03);
+}
+
+html, body {
+  margin:0;
+  padding:0;
+  height:100%;
+  font-family: 'Share Tech Mono', monospace;
+  background: var(--bg-dark);
+  color: var(--neon-primary);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+#app {
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+header {
+  background: var(--header-bg);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--neon-primary);
+  text-shadow: 0 0 10px var(--neon-primary);
+}
+
+.glitch {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+
+#chat-frame {
+  flex-grow: 1;
+  width: 100%;
+  border: none;
+  background:#000;
+  height: calc(100vh - 80px);
+  min-height: 400px;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  background: var(--header-bg);
+  border-top: 2px solid var(--neon-secondary);
+  text-shadow: 0 0 10px var(--neon-secondary);
+}
+
+.btn {
+  background:none;
+  border:2px solid var(--neon-secondary);
+  color: var(--neon-secondary);
+  padding:8px 15px;
+  cursor:pointer;
+  border-radius:var(--btn-radius);
+  transition:0.25s;
+  text-shadow: 0 0 10px var(--neon-secondary);
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.btn:hover {
+  background: var(--neon-secondary);
+  color:black;
+  box-shadow:0 0 20px var(--neon-secondary);
+}
+
+/* Neo-Tokyo Rain Background */
+body::before {
+  content:"";
+  position:fixed;
+  top:0; left:0; width:100%; height:100%;
+  background:transparent;
+  pointer-events:none;
+  z-index:-1;
+  animation: rainAnim 2s linear infinite;
+  opacity: 0.06;
+}
+
+@keyframes rainAnim {
+  0% { background: repeating-linear-gradient(0deg, rgba(10,255,255,0.05) 0px, rgba(10,255,255,0) 1px); }
+  100% { background: repeating-linear-gradient(0deg, rgba(10,255,255,0.05) 100px, rgba(10,255,255,0) 101px); }
+}
+</style>
+</head>
+
+<body>
+<div id="app">
+  <header>
+    <div class="glitch">🌆 NEON CITY CHAT</div>
+    <button id="theme-toggle" class="btn">🌗 MODE</button>
+  </header>
+
+  <iframe
+    id="chat-frame"
+    src="https://deadsimplechat.com/VG3FuoEY8"
+    allow="microphone; camera; autoplay"
+    sandbox="allow-scripts allow-same-origin"
+    title="Dead Simple Chat embed"
+    aria-label="Chat window"
+  ></iframe>
+
+  <footer>
+    © 2077 — Neo-Tokyo Gangsters 💀
+  </footer>
+</div>
+
+<script>
+(() => {
+  const themeToggle = document.getElementById('theme-toggle');
+  themeToggle.addEventListener('click', () => {
+    const root = document.documentElement;
+    const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('cyber-theme', next);
+  });
+
+  // restore saved theme
+  const saved = localStorage.getItem('cyber-theme');
+  if(saved) document.documentElement.setAttribute('data-theme', saved);
+})();
+</script>
+</body>
+</html>
