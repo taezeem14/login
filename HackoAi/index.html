@@ -1097,23 +1097,7 @@ function editMessage(oldContent){
 }
 
 /* ===== TYPEWRITER ===== */
-function streamBot(text){
-  const d=document.createElement("div");
-  d.className="msg bot";
-  chat.appendChild(d);
-
-  let i=0;
-  const interval=setInterval(()=>{
-    d.innerHTML = marked.parse(preprocess(text.slice(0,i++)));
-    chat.scrollTop=chat.scrollHeight;
-    if(i>text.length){
-      clearInterval(interval);
-      render("bot",text);
-      d.remove();
-    }
-  },15);
-}
-  // GLOBAL: typewriter bot streamer
+// GLOBAL: typewriter bot streamer
 async function streamBotInChunks(fullText, chunkSize = 50) {
   const d = document.createElement("div");
   d.className = "msg bot";
@@ -1290,5 +1274,6 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
