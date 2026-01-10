@@ -1104,23 +1104,22 @@ async function streamBotInChunks(fullText, chunkSize = 50) {
   chat.appendChild(d);
 
   let renderedText = "";
-  const session = getCurrentSession();
-
-  // create bot message immediately
-  saveMessage("bot", "");
-  const botIndex = session.messages.length - 1;
 
   for (let i = 0; i < fullText.length; i += chunkSize) {
-    const chunk = fullText.slice(i, i + chunkSize);
-    renderedText += chunk;
+    renderedText += fullText.slice(i, i + chunkSize);
     d.innerHTML = marked.parse(preprocess(renderedText));
     chat.scrollTop = chat.scrollHeight;
-
-    // live update
-    session.messages[botIndex].content = renderedText;
-    localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
-
     await new Promise(r => setTimeout(r, 15));
+  }
+
+  // ✅ SAVE ONLY ONCE — FULL TEXT
+  saveMessage("bot", fullText);
+
+  // syntax highlight safety
+  if (window.hljs) {
+    d.querySelectorAll("pre code").forEach(b =>
+      hljs.highlightElement(b)
+    );
   }
 }
   const prePopup = document.getElementById("prePopup");
@@ -1274,3 +1273,4 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
