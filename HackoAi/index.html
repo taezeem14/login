@@ -42,6 +42,7 @@ body{
   background:var(--bg);
   display:flex;justify-content:center;align-items:center;
   height:100vh;color:var(--text);
+  overflow: hidden;
 }
 
 .container{
@@ -169,6 +170,7 @@ body{
   flex:1;
   background:var(--panel);
   display:flex;flex-direction:column;
+  overflow: hidden;
 }
 
 header{
@@ -176,6 +178,7 @@ header{
   border-bottom:1px solid var(--border);
   display:flex;justify-content:space-between;align-items:center;
   font-weight:600;
+  flex-shrink: 0;
 }
 
 .title-edit{
@@ -189,7 +192,7 @@ header{
   outline:none;
 }
 
-.controls{display:flex;gap:8px;align-items:center}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 
 .menu-btn{
   background:transparent;border:1px solid var(--border);
@@ -213,10 +216,9 @@ select,button.toggle{
   max-width:85%;padding:12px 14px;
   border-radius:12px;line-height:1.5;
   opacity:0;animation:fadeIn .25s forwards;
-  position:relative;word-wrap:break-word;
-  word-wrap: break-word; /* wrap long words */
-  overflow-wrap: anywhere; /* break super long URLs / code */
-  max-width: 100%; /* never go beyond container */
+  position:relative;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .msg:hover .msg-actions{opacity:1;}
@@ -280,6 +282,7 @@ footer{
   display:flex;gap:8px;padding:12px;
   border-top:1px solid var(--border);
   background:var(--panel);
+  flex-shrink: 0;
 }
 
 .input-container{
@@ -291,8 +294,7 @@ input{
   border:1px solid var(--border);
   background:transparent;color:var(--text);
   outline:none;
-  min-width: 0; /* prevents flex from expanding too much */
-  width: 100%;
+  min-width: 0;
   box-sizing: border-box;
 }
 
@@ -326,10 +328,11 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
 .msg ul, .msg ol {padding-left: 20px;margin: 8px 0;}
 .msg li {margin-bottom: 4px;}
   
-  .sidebar.is-hidden {
+.sidebar.is-hidden {
   transform: translateX(-100%);
 }
-  @media (min-width: 769px) {
+
+@media (min-width: 769px) {
   .sidebar.is-hidden {
     width: 0;
     min-width: 0;
@@ -338,12 +341,12 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
     overflow: hidden;
   }
 }
-  .menu-close-btn {
+
+.menu-close-btn {
   display: none;
   position: absolute;
   top: 11px;
   right: 12px;
-
   margin: 0;
   background: #2563eb;
   color: #fff;
@@ -355,39 +358,14 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
   z-index: 20;
 }
 
-@media(max-width:768px){
-  .menu-close-btn {
-    display: block;
-  }
-}
-
-/* ===== MOBILE ===== */
-@media(max-width:768px){
-  .sidebar{
-    position:absolute;
-    top:0;
-    left:0;
-    height:100%;
-    z-index:20;
-  }
-  .menu-btn { display:block !important; }
-  .scroll-bottom { right: 20px; }
-  .app {
-    flex-direction: column;
-    width: 100%;
-  }
-  #chat {
-    padding: 12px;
-    max-width: 100%;
-}
-}
-  .bot img.ai-img {
-  max-width: 100%;      /* never overflow chat width */
-  border-radius: 12px;  /* match msg bubble */
-  margin-top: 8px;       /* spacing inside bubble */
+.bot img.ai-img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin-top: 8px;
   display: block;
 }
-  /* ===== THEMED SELECT ===== */
+
+/* ===== THEMED SELECT ===== */
 .controls select {
   background: linear-gradient(
     180deg,
@@ -416,23 +394,21 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
     background 0.2s;
 }
 
-/* hover */
 .controls select:hover {
   border-color: var(--user);
 }
 
-/* focus */
 .controls select:focus {
   border-color: var(--user);
   box-shadow: 0 0 0 2px rgba(37,99,235,0.35);
 }
 
-/* dropdown options */
 .controls select option {
   background: var(--panel);
   color: var(--text);
 }
-  .select-wrap {
+
+.select-wrap {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -447,7 +423,174 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
   color: var(--muted);
 }
 
+/* ===== MOBILE OPTIMIZED ===== */
+@media(max-width:768px){
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+  }
+  
+  .container {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  
+  .sidebar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 75vw;
+    max-width: 300px;
+    z-index: 999;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.5);
+  }
+  
+  .menu-btn, .menu-close-btn { 
+    display: block !important; 
+  }
+  
+  .scroll-bottom { 
+    right: 16px;
+    bottom: 90px;
+    padding: 8px 12px;
+  }
+  
+  .app {
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+  }
+  
+  header {
+    padding: 10px 12px;
+    font-size: 13px;
+    gap: 6px;
+  }
+  
+  #headerTitle {
+    font-size: 15px;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .controls {
+    gap: 4px;
+  }
+  
+  .controls button.toggle {
+    padding: 5px 7px;
+    font-size: 16px;
+  }
+  
+  .controls select {
+    padding: 5px 20px 5px 8px;
+    font-size: 11px;
+  }
+  
+  .select-wrap::after {
+    right: 6px;
+    font-size: 10px;
+  }
+  
+  #chat {
+    padding: 10px;
+    gap: 12px;
+  }
+  
+  .msg {
+    max-width: 92%;
+    font-size: 15px;
+    padding: 10px 12px;
+  }
+  
+  .msg pre {
+    font-size: 12px;
+    max-height: 250px;
+  }
+  
+  .msg pre code {
+    font-size: 11px;
+  }
+  
+  footer {
+    padding: 8px;
+    gap: 6px;
+  }
+  
+  input {
+    padding: 10px;
+    font-size: 15px;
+  }
+  
+  button.send {
+    padding: 0 16px;
+    font-size: 15px;
+  }
+  
+  .char-counter {
+    font-size: 9px;
+    padding: 2px 4px;
+  }
+  
+  /* Sidebar mobile adjustments */
+  .sidebar-header {
+    padding: 12px;
+  }
+  
+  .search-box {
+    font-size: 14px;
+    padding: 8px;
+  }
+  
+  .history-item {
+    font-size: 13px;
+    padding: 9px 10px;
+  }
+  
+  .new-chat-btn, .import-btn, .export-btn {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+}
 
+/* Extra small screens */
+@media(max-width:375px){
+  body {
+    font-size: 15px;
+  }
+  
+  #headerTitle {
+    max-width: 80px;
+    font-size: 14px;
+  }
+  
+  .controls button.toggle {
+    padding: 4px 6px;
+    font-size: 14px;
+  }
+  
+  .msg {
+    font-size: 14px;
+    padding: 9px 11px;
+  }
+  
+  input {
+    font-size: 14px;
+    padding: 9px;
+  }
+  
+  button.send {
+    padding: 0 14px;
+    font-size: 14px;
+  }
+}
 </style>
 </head>
 
@@ -1280,6 +1423,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
