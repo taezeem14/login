@@ -1293,6 +1293,33 @@ goToPuter.addEventListener("click", () => {
   window.open("https://puter.com/dashboard", "_blank");
 });
 
+  
+// AUTO Chat titling
+  async function generateTitle(userPrompt, botReply) {
+  const res = await fetch("https://hackoai-worker.tariqmtaezeem.workers.dev", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      text: `
+Create a short chat title (3–6 words).
+No quotes. No emojis.
+
+User: ${userPrompt}
+Assistant: ${botReply}
+      `.trim()
+    })
+  });
+
+  const data = await res.json();
+
+  return (
+    data.choices?.[0]?.message?.content
+      ?.replace(/["\n]/g, "")
+      ?.slice(0, 40)
+  ) || "New Chat";
+}
+
+  
 // SEND function for DeepSeek
 async function send() {
   let prompt = input.value.trim();
@@ -1396,8 +1423,20 @@ try {
       const answer =
         data.choices?.[0]?.message?.content ||
         "💀 Empty response from DeepSeek";
+      const session = getCurrentSession();
+
+const shouldAutoTitle =
+  session.title === "New Chat" &&
+  session.messages.filter(m => m.role === "user").length === 1;
+
 
       await streamBotInChunks(answer);
+      if (shouldAutoTitle) {
+  const title = await generateTitle(prompt, answer);
+  session.title = title;
+  saveSessions();
+}
+
     }
   } catch (err) {
     loading.remove();
@@ -1423,6 +1462,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
