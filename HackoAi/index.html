@@ -1321,11 +1321,6 @@ async function send() {
   let prompt = input.value.trim();
   const firstUserPrompt = prompt;
   const session = getCurrentSession();
-  const shouldAutoTitle =
-  !session.autoTitled &&
-  session.messages.length === 0 &&
-  !prompt.startsWith("/img") &&
-  !prompt.startsWith("/vid");
   if (!prompt) return;
 
   input.value = "";
@@ -1334,6 +1329,12 @@ async function send() {
   const cmd = prompt.trim().toLowerCase();
   const isImage = prompt.startsWith("/img ");
   const isVideo = prompt.startsWith("/vid ");
+
+  const shouldAutoTitle =
+  !session.autoTitled &&
+  session.messages.length === 0 &&
+  !isImage &&
+  !isVideo;
 
   if (isImage || isVideo) prompt = prompt.slice(5);
 
@@ -1462,6 +1463,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
