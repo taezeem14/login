@@ -1287,7 +1287,30 @@ goToPuter.addEventListener("click", () => {
   // redirect
   window.open("https://puter.com/dashboard", "_blank");
 });
+// AUTO Chat titling
+  async function generateTitle(userPrompt, botReply) {
+  const res = await fetch("https://hackoai-worker.tariqmtaezeem.workers.dev", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      text: `
+Create a short chat title (3–6 words).
+No quotes. No emojis.
 
+User: ${userPrompt}
+Assistant: ${botReply}
+      `.trim()
+    })
+  });
+
+  const data = await res.json();
+
+  return (
+    data.choices?.[0]?.message?.content
+      ?.replace(/["\n]/g, "")
+      ?.slice(0, 40)
+  ) || "New Chat";
+}
 // SEND function for DeepSeek
 async function send() {
   let prompt = input.value.trim();
@@ -1298,6 +1321,11 @@ async function send() {
 
   const isImage = prompt.startsWith("/img ");
   const isVideo = prompt.startsWith("/vid ");
+  const shouldAutoTitle =
+  !session.autoTitled &&
+  session.messages.length === 0 &&
+  !isImage &&
+  !isVideo;
 
   if (isImage || isVideo) prompt = prompt.slice(5);
 
@@ -1418,6 +1446,7 @@ updateHeaderTitle();
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"0fb7f381f5dd428589ff14babf88b44f","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
+
 
 
 
