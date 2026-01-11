@@ -739,7 +739,8 @@ function saveSessions() {
         title: "New Chat",
         messages: [],
         timestamp: Date.now(),
-        pinned: false
+        pinned: false,
+        autoTitled: false
       };
     }
   }
@@ -792,14 +793,7 @@ function handleImport(e) {
 }
 
 
-function updateTitle(){
-  const session=getCurrentSession();
-  if(session.messages.length===1&&session.title==="New Chat"){
-    const firstMsg=session.messages[0].content;
-    session.title=firstMsg.slice(0,30)+(firstMsg.length>30?"...":"");
-    saveSessions();
-  }
-}
+
 
 function updateHeaderTitle(){
   const existingTitle=document.getElementById("headerTitle");
@@ -1236,7 +1230,6 @@ function render(role, content, saveIt=true){
 
   if(saveIt){
     saveMessage(role,content);
-    updateTitle();
   }
   return d;
 }
@@ -1323,6 +1316,7 @@ Assistant: ${botReply}
 // SEND function for DeepSeek
 async function send() {
   let prompt = input.value.trim();
+  const firstUserPrompt = prompt;
   if (!prompt) return;
 
   input.value = "";
@@ -1426,16 +1420,19 @@ try {
       const session = getCurrentSession();
 
 const shouldAutoTitle =
-  session.title === "New Chat" &&
-  session.messages.filter(m => m.role === "user").length === 1;
-
+  !session.autoTitled &&
+  session.messages.length === 1 &&
+  session.messages[0].role === "user";
 
       await streamBotInChunks(answer);
       if (shouldAutoTitle) {
-  const title = await generateTitle(prompt, answer);
+  const title = await generateTitle(firstUserPrompt, answer);
   session.title = title;
+  session.autoTitled = true;
   saveSessions();
 }
+
+updateHeaderTitle();
 
     }
   } catch (err) {
@@ -1462,6 +1459,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
