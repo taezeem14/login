@@ -1014,7 +1014,8 @@ function newChat(){
     title:"New Chat",
     messages:[],
     timestamp:Date.now(),
-    pinned:false
+    pinned:false,
+    autoTitled: false   // 🔥 REQUIRED
   };
   saveSessions();
   chat.innerHTML="";
@@ -1046,10 +1047,12 @@ function deleteChat(id){
 
 function clearChat(){
   if(!confirm("Clear current chat? This cannot be undone 💀")) return;
-  getCurrentSession().messages=[];
-  getCurrentSession().title="New Chat";
+  const session = getCurrentSession();
+  session.messages = [];
+  session.title = "New Chat";
+  session.autoTitled = false; // 🔥 RESET
   saveSessions();
-  chat.innerHTML="";
+  chat.innerHTML = "";
   render("bot","**Chat cleared. Fresh slate 😎✨**", false);
 }
 
@@ -1317,6 +1320,12 @@ Assistant: ${botReply}
 async function send() {
   let prompt = input.value.trim();
   const firstUserPrompt = prompt;
+  const session = getCurrentSession();
+  const shouldAutoTitle =
+  !session.autoTitled &&
+  session.messages.length === 0 &&
+  !prompt.startsWith("/img") &&
+  !prompt.startsWith("/vid");
   if (!prompt) return;
 
   input.value = "";
@@ -1417,13 +1426,7 @@ try {
       const answer =
         data.choices?.[0]?.message?.content ||
         "💀 Empty response from DeepSeek";
-      const session = getCurrentSession();
-
-const shouldAutoTitle =
-  !session.autoTitled &&
-  session.messages.length === 1 &&
-  session.messages[0].role === "user";
-
+      
       await streamBotInChunks(answer);
       if (shouldAutoTitle) {
   const title = await generateTitle(firstUserPrompt, answer);
@@ -1459,6 +1462,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
