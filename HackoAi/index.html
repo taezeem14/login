@@ -739,7 +739,8 @@ function saveSessions() {
         title: "New Chat",
         messages: [],
         timestamp: Date.now(),
-        pinned: false
+        pinned: false,
+        autoTitled: false
       };
     }
   }
@@ -792,14 +793,7 @@ function handleImport(e) {
 }
 
 
-function updateTitle(){
-  const session=getCurrentSession();
-  if(session.messages.length===1&&session.title==="New Chat"){
-    const firstMsg=session.messages[0].content;
-    session.title=firstMsg.slice(0,30)+(firstMsg.length>30?"...":"");
-    saveSessions();
-  }
-}
+
 
 function updateHeaderTitle(){
   const existingTitle=document.getElementById("headerTitle");
@@ -884,7 +878,10 @@ function renderHistory(){
   if(query){
     filtered=filtered.filter(s=>
       s.title.toLowerCase().includes(query)||
-      s.messages.some(m=>m.content.toLowerCase().includes(query))
+      s.messages.some(m =>
+  typeof m.content === "string" &&
+  m.content.toLowerCase().includes(query)
+)
     );
   }
   
@@ -1017,7 +1014,8 @@ function newChat(){
     title:"New Chat",
     messages:[],
     timestamp:Date.now(),
-    pinned:false
+    pinned:false,
+    autoTitled: false   // 🔥 REQUIRED
   };
   saveSessions();
   chat.innerHTML="";
@@ -1049,10 +1047,12 @@ function deleteChat(id){
 
 function clearChat(){
   if(!confirm("Clear current chat? This cannot be undone 💀")) return;
-  getCurrentSession().messages=[];
-  getCurrentSession().title="New Chat";
+  const session = getCurrentSession();
+  session.messages = [];
+  session.title = "New Chat";
+  session.autoTitled = false; // 🔥 RESET
   saveSessions();
-  chat.innerHTML="";
+  chat.innerHTML = "";
   render("bot","**Chat cleared. Fresh slate 😎✨**", false);
 }
 
@@ -1067,9 +1067,13 @@ function toggleSidebar(){
 function exportChat(){
   const session=getCurrentSession();
   let text=`# ${session.title}\n\n`;
-  session.messages.forEach(m=>{
-    text+=`**${m.role.toUpperCase()}:**\n${m.content}\n\n`;
-  });
+  session.messages.forEach(m => {
+  if (typeof m.content === "string") {
+    text += `**${m.role.toUpperCase()}:**\n${m.content}\n\n`;
+  } else {
+    text += `**${m.role.toUpperCase()}:**\n[${m.content.type.toUpperCase()}]\n\n`;
+  }
+});
   
   const blob=new Blob([text],{type:"text/markdown"});
   const url=URL.createObjectURL(blob);
@@ -1229,7 +1233,6 @@ function render(role, content, saveIt=true){
 
   if(saveIt){
     saveMessage(role,content);
-    updateTitle();
   }
   return d;
 }
@@ -1248,10 +1251,8 @@ async function streamBotInChunks(fullText, chunkSize = 50) {
 
   let renderedText = "";
   const session = getCurrentSession();
-
-  // create bot message immediately
   saveMessage("bot", "");
-  const botIndex = session.messages.length - 1;
+  const botIndex = getCurrentSession().messages.length - 1;
 
   for (let i = 0; i < fullText.length; i += chunkSize) {
     const chunk = fullText.slice(i, i + chunkSize);
@@ -1287,6 +1288,8 @@ goToPuter.addEventListener("click", () => {
   // redirect
   window.open("https://puter.com/dashboard", "_blank");
 });
+
+  
 // AUTO Chat titling
   async function generateTitle(userPrompt, botReply) {
   const res = await fetch("https://hackoai-worker.tariqmtaezeem.workers.dev", {
@@ -1311,23 +1314,26 @@ Assistant: ${botReply}
       ?.slice(0, 40)
   ) || "New Chat";
 }
+
   
 // SEND function for DeepSeek
 async function send() {
   let prompt = input.value.trim();
+  const firstUserPrompt = prompt;
   const session = getCurrentSession();
+  const shouldAutoTitle =
+  !session.autoTitled &&
+  session.messages.length === 0 &&
+  !prompt.startsWith("/img") &&
+  !prompt.startsWith("/vid");
   if (!prompt) return;
 
   input.value = "";
   charCounter.textContent = "0 chars";
-
+  
+  const cmd = prompt.trim().toLowerCase();
   const isImage = prompt.startsWith("/img ");
   const isVideo = prompt.startsWith("/vid ");
-  const shouldAutoTitle =
-  !session.autoTitled &&
-  session.messages.length === 0 &&
-  !isImage &&
-  !isVideo;
 
   if (isImage || isVideo) prompt = prompt.slice(5);
 
@@ -1420,13 +1426,17 @@ try {
       const answer =
         data.choices?.[0]?.message?.content ||
         "💀 Empty response from DeepSeek";
-
+      
       await streamBotInChunks(answer);
       if (shouldAutoTitle) {
-      session.title = await generateTitle(prompt, botReply);
-      session.autoTitled = true;
-      saveSessions();
-      updateHeaderTitle();
+  const title = await generateTitle(firstUserPrompt, answer);
+  session.title = title;
+  session.autoTitled = true;
+  saveSessions();
+}
+
+updateHeaderTitle();
+
     }
   } catch (err) {
     loading.remove();
@@ -1450,19 +1460,6 @@ renderHistory();
 updateHeaderTitle();
 
 </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"0fb7f381f5dd428589ff14babf88b44f","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
 
