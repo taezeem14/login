@@ -1244,34 +1244,31 @@ function editMessage(oldContent){
 
 /* ===== TYPEWRITER ===== */
 // GLOBAL: typewriter bot streamer
-async function streamBotInChunks(fullText, targetEl, chunkSize = 50) {
+async function streamBotInChunks(fullText, chunkSize = 50) {
+  const d = document.createElement("div");
+  d.className = "msg bot";
+  chat.appendChild(d);
+
   let renderedText = "";
   const session = getCurrentSession();
 
-  // save empty bot msg
+  // create bot message immediately
   saveMessage("bot", "");
   const botIndex = session.messages.length - 1;
 
   for (let i = 0; i < fullText.length; i += chunkSize) {
-    renderedText += fullText.slice(i, i + chunkSize);
-
-    targetEl.innerHTML = marked.parse(preprocess(renderedText));
+    const chunk = fullText.slice(i, i + chunkSize);
+    renderedText += chunk;
+    d.innerHTML = marked.parse(preprocess(renderedText));
     chat.scrollTop = chat.scrollHeight;
 
-    // live save
+    // live update
     session.messages[botIndex].content = renderedText;
     localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
 
     await new Promise(r => setTimeout(r, 15));
   }
-
-  // add timestamp ONCE at the end
-  const t = document.createElement("div");
-  t.className = "timestamp";
-  t.textContent = time();
-  targetEl.appendChild(t);
 }
-
   const prePopup = document.getElementById("prePopup");
 const goToPuter = document.getElementById("goToPuter");
   
@@ -1466,6 +1463,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
