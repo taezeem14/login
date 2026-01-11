@@ -1311,9 +1311,11 @@ Assistant: ${botReply}
       ?.slice(0, 40)
   ) || "New Chat";
 }
+  
 // SEND function for DeepSeek
 async function send() {
   let prompt = input.value.trim();
+  const session = getCurrentSession();
   if (!prompt) return;
 
   input.value = "";
@@ -1420,6 +1422,11 @@ try {
         "💀 Empty response from DeepSeek";
 
       await streamBotInChunks(answer);
+      if (shouldAutoTitle) {
+      session.title = await generateTitle(prompt, botReply);
+      session.autoTitled = true;
+      saveSessions();
+      updateHeaderTitle();
     }
   } catch (err) {
     loading.remove();
@@ -1446,6 +1453,7 @@ updateHeaderTitle();
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"0fb7f381f5dd428589ff14babf88b44f","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
+
 
 
 
