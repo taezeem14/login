@@ -41,12 +41,12 @@ body{
   font-size: 25px;
   background:var(--bg);
   display:flex;justify-content:center;align-items:center;
-  height:100vh;color:var(--text);
+  min-height:100dvh;color:var(--text);
   overflow: hidden;
 }
 
 .container{
-  width:100%;max-width:1100px;height:90vh;
+  width:100%;max-width:1100px;height:100%;
   display:flex;gap:0;
   box-shadow:0 20px 40px rgba(0,0,0,.3);
   border-radius:14px;overflow:hidden;
@@ -433,7 +433,7 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
   
   .container {
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     max-width: 100%;
     border-radius: 0;
     box-shadow: none;
@@ -520,9 +520,15 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
   }
   
   footer {
-    padding: 8px;
-    gap: 6px;
-  }
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+  z-index: 10;
+}
   
   input {
     padding: 10px;
@@ -667,7 +673,7 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
 <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
 
 <script>
-if (!window.marked) {
+ if (!window.marked) {
   const m = document.createElement("script");
   m.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
   document.head.appendChild(m);
@@ -676,7 +682,7 @@ if (!window.marked) {
 async function clearPuter() {
   // wipe storage
   localStorage.clear();
-  localStorage.clear();
+  sessionStorage.clear();
 
   // wipe cache storage
   if ("caches" in window) {
@@ -1541,9 +1547,29 @@ getCurrentSession().messages.forEach(m=>render(m.role,m.content,false));
 renderHistory();
 updateHeaderTitle();
 
+  if (window.visualViewport) {
+  const footer = document.querySelector("footer");
+
+  function adjustForKeyboard() {
+    const viewport = window.visualViewport;
+    const keyboardHeight =
+      window.innerHeight - viewport.height - viewport.offsetTop;
+
+    footer.style.transform =
+      keyboardHeight > 0
+        ? `translateY(-${keyboardHeight}px)`
+        : "translateY(0)";
+  }
+
+  visualViewport.addEventListener("resize", adjustForKeyboard);
+  visualViewport.addEventListener("scroll", adjustForKeyboard);
+}
+
+
 </script>
 </body>
 </html>
+
 
 
 
