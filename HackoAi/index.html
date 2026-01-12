@@ -713,6 +713,30 @@ const PREPOPUP_KEY = "hackoai_prepopup_clicked";
 let lastUserPrompt = null;
 let isGenerating = false;
 
+function retryLast() {
+  if (!lastUserPrompt || isGenerating) return;
+
+  const lastBot = [...chat.children].reverse()
+    .find(el => el.classList.contains("bot"));
+  if (lastBot) lastBot.remove();
+
+  const session = getCurrentSession();
+  for (let i = session.messages.length - 1; i >= 0; i--) {
+    if (session.messages[i].role === "bot") {
+      session.messages.splice(i, 1);
+      break;
+    }
+  }
+
+  saveSessions();
+  input.value = lastUserPrompt;
+  send();
+}
+
+function editMessage(oldContent) {
+  input.value = oldContent;
+  input.focus();
+}
 
 /* ===== SESSION MANAGEMENT ===== */
 /* ===== STORAGE HELPERS ===== */
@@ -1255,33 +1279,7 @@ if (role === "bot") {
   }
   return d;
 }
-
-function editMessage(oldContent){
-  function retryLast() {
-  if (!lastUserPrompt || isGenerating) return;
-
-  // remove last bot DOM
-  const lastBot = [...chat.children].reverse()
-    .find(el => el.classList.contains("bot"));
-  if (lastBot) lastBot.remove();
-
-  // remove last bot from session
-  const session = getCurrentSession();
-  for (let i = session.messages.length - 1; i >= 0; i--) {
-    if (session.messages[i].role === "bot") {
-      session.messages.splice(i, 1);
-      break;
-    }
-  }
-
-  saveSessions();
-  input.value = lastUserPrompt;
-  send();
-}
-  input.value=oldContent;
-  input.focus();
-}
-
+  
 /* ===== TYPEWRITER ===== */
 // GLOBAL: typewriter bot streamer
 async function streamBotInChunks(fullText, chunkSize = 50) {
@@ -1503,5 +1501,6 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
