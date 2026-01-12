@@ -1443,9 +1443,7 @@ if (isImage) {
     /* ================= VIDEO ================= */
     else if (isVideo) {
       const video = await puter.ai.txt2vid(prompt, {
-        model: "sora-2",
-        seconds: 8,
-        size: "1280x720"
+        model: "ByteDance/Seedance-1.0-lite"
       });
 
       loading.remove();
@@ -1528,6 +1526,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
