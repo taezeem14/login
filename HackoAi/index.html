@@ -731,6 +731,7 @@ isGenerating = false;
   chat.innerHTML = "";
   session.messages.forEach(m => render(m.role, m.content, false));
 
+  getCurrentSession().autoTitled = false;
   saveSessions();
 
   input.value = lastUserPrompt;
@@ -1398,8 +1399,13 @@ if (isImage) {
     disable_safety_checker: true
   })
   .then(img => {
-    loading.remove();
+    // remove spinner bot message from session
+      const s = getCurrentSession();
+      s.messages.pop();
+      saveSessions();
 
+    loading.remove();
+    isGenerating = false;
     const div = document.createElement("div");
     div.className = "msg bot";
 
@@ -1430,8 +1436,12 @@ if (isImage) {
       const video = await puter.ai.txt2vid(prompt, {
         model: "ByteDance/Seedance-1.0-lite"
       });
+      // remove spinner bot message from session
+        const s = getCurrentSession();
+        s.messages.pop();
+        saveSessions();
 
-      loading.remove();
+        loading.remove();
 
       video.controls = true;
       video.autoplay = true;
@@ -1514,6 +1524,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
