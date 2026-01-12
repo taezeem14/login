@@ -1374,7 +1374,7 @@ async function send() {
   if (isGenerating) {
   console.warn("Generation already in progress");
   return;
-
+  }
   let prompt = input.value.trim();
   if (!prompt) return;
 
@@ -1544,6 +1544,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
