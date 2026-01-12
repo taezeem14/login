@@ -1200,7 +1200,7 @@ function preprocess(text){
 }
 
 /* ===== RENDER ===== */
-function render(role, content, saveIt=true){
+function render(role, content, saveIt = true) {
   const d = document.createElement("div");
   d.className = "msg " + role;
 
@@ -1209,7 +1209,8 @@ function render(role, content, saveIt=true){
     img.src = content.src;
     img.className = "ai-img";
     d.appendChild(img);
-  } else if (typeof content === "object" && content.type === "video") {
+  } 
+  else if (typeof content === "object" && content.type === "video") {
     const video = document.createElement("video");
     video.src = content.src;
     video.controls = true;
@@ -1218,81 +1219,80 @@ function render(role, content, saveIt=true){
     video.style.maxWidth = "100%";
     video.style.borderRadius = "12px";
     d.appendChild(video);
-  } else if (typeof content === "string") {
-    d.innerHTML = marked.parse(preprocess(content));
+  } 
+  else {
+    d.innerHTML = marked.parse(preprocess(String(content)));
   }
-  // Add message actions for user messages
-  if(role==="user"){
-    const actions=document.createElement("div");
-    actions.className="msg-actions";
-    
-    const editBtn=document.createElement("button");
-    editBtn.className="msg-btn";
-    editBtn.textContent="✏️ Edit";
-    editBtn.onclick=()=>editMessage(content);
-    
+
+  /* USER ACTIONS */
+  if (role === "user") {
+    const actions = document.createElement("div");
+    actions.className = "msg-actions";
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "msg-btn";
+    editBtn.textContent = "✏️ Edit";
+    editBtn.onclick = () => editMessage(content);
+
     actions.appendChild(editBtn);
     d.appendChild(actions);
   }
 
-  // Add retry button for bot messages
-if (role === "bot") {
-  const actions = document.createElement("div");
-  actions.className = "msg-actions";
+  /* BOT ACTIONS */
+  if (role === "bot") {
+    const actions = document.createElement("div");
+    actions.className = "msg-actions";
 
-  const retryBtn = document.createElement("button");
-  retryBtn.className = "msg-btn";
-  retryBtn.textContent = "🔄 Retry";
-  retryBtn.title = "Regenerate response";
+    const retryBtn = document.createElement("button");
+    retryBtn.className = "msg-btn";
+    retryBtn.textContent = "🔄 Retry";
+    retryBtn.onclick = retryLast;
 
-  retryBtn.onclick = () => retryLast();
+    actions.appendChild(retryBtn);
+    d.appendChild(actions);
+  }
 
-  actions.appendChild(retryBtn);
-  d.appendChild(actions);
-}
-  
- if (window.hljs) {
-  d.querySelectorAll("pre code").forEach(block => {
-    hljs.highlightElement(block);
-  });
-}
+  /* CODE BLOCK TOOLS */
+  if (window.hljs) {
+    d.querySelectorAll("pre code").forEach(block => {
+      hljs.highlightElement(block);
 
-    const pre=block.parentElement;
-    
-    const collapseBtn=document.createElement("button");
-    collapseBtn.className="collapse-btn";
-    collapseBtn.textContent="▼";
-    collapseBtn.onclick=()=>{
-      pre.classList.toggle("collapsed");
-      collapseBtn.textContent=pre.classList.contains("collapsed")?"▶":"▼";
-    };
-    
-    const btn=document.createElement("button");
-    btn.className="copy-btn";
-    btn.textContent="COPY";
-    btn.onclick=()=>{
-      navigator.clipboard.writeText(block.textContent);
-      btn.textContent="COPIED";
-      setTimeout(()=>btn.textContent="COPY",1000);
-    };
-    
-    pre.appendChild(collapseBtn);
-    pre.appendChild(btn);
-  });
+      const pre = block.parentElement;
 
-  const t=document.createElement("div");
-  t.className="timestamp";
-  t.textContent=time();
+      const collapseBtn = document.createElement("button");
+      collapseBtn.className = "collapse-btn";
+      collapseBtn.textContent = "▼";
+      collapseBtn.onclick = () => {
+        pre.classList.toggle("collapsed");
+        collapseBtn.textContent = pre.classList.contains("collapsed") ? "▶" : "▼";
+      };
+
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "copy-btn";
+      copyBtn.textContent = "COPY";
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(block.textContent);
+        copyBtn.textContent = "COPIED";
+        setTimeout(() => copyBtn.textContent = "COPY", 1000);
+      };
+
+      pre.appendChild(collapseBtn);
+      pre.appendChild(copyBtn);
+    });
+  }
+
+  const t = document.createElement("div");
+  t.className = "timestamp";
+  t.textContent = time();
   d.appendChild(t);
 
   chat.appendChild(d);
-  chat.scrollTop=chat.scrollHeight;
+  chat.scrollTop = chat.scrollHeight;
 
-  if(saveIt){
-    saveMessage(role,content);
-  }
+  if (saveIt) saveMessage(role, content);
   return d;
 }
+
   
 /* ===== TYPEWRITER ===== */
 // GLOBAL: typewriter bot streamer
@@ -1374,8 +1374,6 @@ async function send() {
   if (isGenerating) {
   console.warn("Generation already in progress");
   return;
-    
-  if (isGenerating) return;
 
   let prompt = input.value.trim();
   if (!prompt) return;
@@ -1503,8 +1501,8 @@ try {
         data.choices?.[0]?.message?.content ||
         "💀 Empty response from DeepSeek";
       
-      await streamBotInChunks(answer);
       loading.remove();
+      await streamBotInChunks(answer);
       isGenerating = false;
       if (shouldAutoTitle) {
   const title = await generateTitle(firstUserPrompt, answer);
@@ -1546,6 +1544,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
