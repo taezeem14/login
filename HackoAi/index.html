@@ -667,6 +667,12 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
 <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
 
 <script>
+if (!window.marked) {
+  const m = document.createElement("script");
+  m.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
+  document.head.appendChild(m);
+}
+  
 async function clearPuter() {
   // wipe storage
   localStorage.clear();
@@ -1245,8 +1251,11 @@ if (role === "bot") {
   d.appendChild(actions);
 }
   
-  d.querySelectorAll("pre code").forEach(block=>{
+ if (window.hljs) {
+  d.querySelectorAll("pre code").forEach(block => {
     hljs.highlightElement(block);
+  });
+}
 
     const pre=block.parentElement;
     
@@ -1309,6 +1318,7 @@ async function streamBotInChunks(fullText, chunkSize = 50) {
 
     await new Promise(r => setTimeout(r, 15));
   }
+  saveSessions();
 }
   const prePopup = document.getElementById("prePopup");
 const goToPuter = document.getElementById("goToPuter");
@@ -1361,6 +1371,10 @@ Assistant: ${botReply}
   
 // SEND function for DeepSeek
 async function send() {
+  if (isGenerating) {
+  console.warn("Generation already in progress");
+  return;
+    
   if (isGenerating) return;
 
   let prompt = input.value.trim();
@@ -1387,7 +1401,12 @@ async function send() {
   if (isImage || isVideo) prompt = prompt.slice(5);
 
   render("user", prompt);
-  const loading = render("bot", "<div class='spinner'></div>", false);
+  const loading = document.createElement("div");
+loading.className = "msg bot";
+loading.innerHTML = "<div class='spinner'></div>";
+chat.appendChild(loading);
+chat.scrollTop = chat.scrollHeight;
+
 
   try {
 /* ================= IMAGE ================= */
@@ -1404,7 +1423,7 @@ if (isImage) {
       s.messages.pop();
       saveSessions();
 
-    loading.remove();
+    
     isGenerating = false;
     const div = document.createElement("div");
     div.className = "msg bot";
@@ -1425,7 +1444,7 @@ if (isImage) {
     chat.scrollTop = chat.scrollHeight;
   })
   .catch(err => {
-    loading.remove();
+    
     isGenerating = false;
     console.error(err);
     render("bot", "**Image gen failed 💀**");
@@ -1442,8 +1461,7 @@ if (isImage) {
         s.messages.pop();
         saveSessions();
 
-        loading.remove();
-
+      
       video.controls = true;
       video.autoplay = true;
       video.loop = true;
@@ -1479,13 +1497,14 @@ try {
   throw new Error("Server returned invalid response");
 }
 
-      loading.remove();
+      
 
       const answer =
         data.choices?.[0]?.message?.content ||
         "💀 Empty response from DeepSeek";
       
       await streamBotInChunks(answer);
+      loading.remove();
       isGenerating = false;
       if (shouldAutoTitle) {
   const title = await generateTitle(firstUserPrompt, answer);
@@ -1498,7 +1517,7 @@ updateHeaderTitle();
 
     }
   } catch (err) {
-    loading.remove();
+    
     isGenerating = false;
     console.error(err);
     render("bot", "**Network error 💀**");
@@ -1514,9 +1533,11 @@ input.addEventListener("keydown", e => {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
     send();
+    return;
   }
+  e.stopPropagation(); // 🔥 THIS FIXES SHORTCUTS
 });
-
+  
 // Load initial session
 getCurrentSession().messages.forEach(m=>render(m.role,m.content,false));
 renderHistory();
@@ -1525,6 +1546,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
