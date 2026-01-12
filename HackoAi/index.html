@@ -710,6 +710,9 @@ const charCounter=document.getElementById("charCounter");
 const headerTitle=document.getElementById("headerTitle");
 const PREPOPUP_KEY = "hackoai_prepopup_clicked";
 
+let lastUserPrompt = null;
+let isGenerating = false;
+
 
 /* ===== SESSION MANAGEMENT ===== */
 /* ===== STORAGE HELPERS ===== */
@@ -1196,6 +1199,22 @@ function render(role, content, saveIt=true){
     actions.appendChild(editBtn);
     d.appendChild(actions);
   }
+
+  // Add retry button for bot messages
+if (role === "bot") {
+  const actions = document.createElement("div");
+  actions.className = "msg-actions";
+
+  const retryBtn = document.createElement("button");
+  retryBtn.className = "msg-btn";
+  retryBtn.textContent = "🔄 Retry";
+  retryBtn.title = "Regenerate response";
+
+  retryBtn.onclick = () => retryLast();
+
+  actions.appendChild(retryBtn);
+  d.appendChild(actions);
+}
   
   d.querySelectorAll("pre code").forEach(block=>{
     hljs.highlightElement(block);
@@ -1238,6 +1257,27 @@ function render(role, content, saveIt=true){
 }
 
 function editMessage(oldContent){
+  function retryLast() {
+  if (!lastUserPrompt || isGenerating) return;
+
+  // remove last bot DOM
+  const lastBot = [...chat.children].reverse()
+    .find(el => el.classList.contains("bot"));
+  if (lastBot) lastBot.remove();
+
+  // remove last bot from session
+  const session = getCurrentSession();
+  for (let i = session.messages.length - 1; i >= 0; i--) {
+    if (session.messages[i].role === "bot") {
+      session.messages.splice(i, 1);
+      break;
+    }
+  }
+
+  saveSessions();
+  input.value = lastUserPrompt;
+  send();
+}
   input.value=oldContent;
   input.focus();
 }
@@ -1319,6 +1359,7 @@ Assistant: ${botReply}
 // SEND function for DeepSeek
 async function send() {
   let prompt = input.value.trim();
+  lastUserPrompt = prompt;
   const firstUserPrompt = prompt;
   const session = getCurrentSession();
   const shouldAutoTitle =
@@ -1462,4 +1503,5 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
