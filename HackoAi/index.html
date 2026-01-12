@@ -1317,8 +1317,8 @@ async function streamBotInChunks(fullText, chunkSize = 50) {
     localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
 
     await new Promise(r => setTimeout(r, 15));
+      saveSessions();
   }
-  saveSessions();
 }
   const prePopup = document.getElementById("prePopup");
 const goToPuter = document.getElementById("goToPuter");
@@ -1544,6 +1544,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
