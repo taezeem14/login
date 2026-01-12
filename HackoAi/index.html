@@ -714,6 +714,7 @@ let lastUserPrompt = null;
 let isGenerating = false;
 
 function retryLast() {
+  isGenerating = false;
   if (!lastUserPrompt || isGenerating) return;
 
   const session = getCurrentSession();
@@ -733,21 +734,7 @@ function retryLast() {
   saveSessions();
 
   input.value = lastUserPrompt;
-  send();
-}
-
-  if (lastBot) lastBot.remove();
-
-  const session = getCurrentSession();
-  for (let i = session.messages.length - 1; i >= 0; i--) {
-    if (session.messages[i].role === "bot") {
-      session.messages.splice(i, 1);
-      break;
-    }
-  }
-
-  saveSessions();
-  input.value = lastUserPrompt;
+  render("bot", "<div class='spinner'></div>", false);
   send();
 }
 
@@ -1386,7 +1373,7 @@ async function send() {
   const session = getCurrentSession();
   const shouldAutoTitle =
   !session.autoTitled &&
-  session.messages.length === 0 &&
+  session.messages.filter(m => m.role === "user").length === 1
   !prompt.startsWith("/img") &&
   !prompt.startsWith("/vid");
   if (!prompt) return;
@@ -1526,6 +1513,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
