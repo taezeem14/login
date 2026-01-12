@@ -716,8 +716,26 @@ let isGenerating = false;
 function retryLast() {
   if (!lastUserPrompt || isGenerating) return;
 
-  const lastBot = [...chat.children].reverse()
-    .find(el => el.classList.contains("bot"));
+  const session = getCurrentSession();
+
+  // remove last bot message from session
+  for (let i = session.messages.length - 1; i >= 0; i--) {
+    if (session.messages[i].role === "bot") {
+      session.messages.splice(i, 1);
+      break;
+    }
+  }
+
+  // re-render chat cleanly
+  chat.innerHTML = "";
+  session.messages.forEach(m => render(m.role, m.content, false));
+
+  saveSessions();
+
+  input.value = lastUserPrompt;
+  send();
+}
+
   if (lastBot) lastBot.remove();
 
   const session = getCurrentSession();
@@ -1356,8 +1374,14 @@ Assistant: ${botReply}
   
 // SEND function for DeepSeek
 async function send() {
+  if (isGenerating) return;
+
   let prompt = input.value.trim();
+  if (!prompt) return;
+
+  isGenerating = true;
   lastUserPrompt = prompt;
+
   const firstUserPrompt = prompt;
   const session = getCurrentSession();
   const shouldAutoTitle =
@@ -1411,6 +1435,7 @@ if (isImage) {
   })
   .catch(err => {
     loading.remove();
+    isGenerating = false;
     console.error(err);
     render("bot", "**Image gen failed 💀**");
   });
@@ -1467,6 +1492,7 @@ try {
         "💀 Empty response from DeepSeek";
       
       await streamBotInChunks(answer);
+      isGenerating = false;
       if (shouldAutoTitle) {
   const title = await generateTitle(firstUserPrompt, answer);
   session.title = title;
@@ -1479,6 +1505,7 @@ updateHeaderTitle();
     }
   } catch (err) {
     loading.remove();
+    isGenerating = false;
     console.error(err);
     render("bot", "**Network error 💀**");
   }
@@ -1501,6 +1528,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
