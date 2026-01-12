@@ -1434,7 +1434,8 @@ if (isImage) {
     /* ================= VIDEO ================= */
     else if (isVideo) {
       const video = await puter.ai.txt2vid(prompt, {
-        model: "ByteDance/Seedance-1.0-lite"
+        model: "ByteDance/Seedance-1.0-lite",
+        seconds: 8
       });
       // remove spinner bot message from session
         const s = getCurrentSession();
@@ -1524,6 +1525,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
