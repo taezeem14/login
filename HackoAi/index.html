@@ -1456,11 +1456,6 @@ if (isImage) {
     disable_safety_checker: true
   })
   .then(img => {
-    // remove spinner bot message from session
-      const s = getCurrentSession();
-      s.messages.pop();
-      saveSessions();
-
     
     isGenerating = false;
     const div = document.createElement("div");
@@ -1494,11 +1489,6 @@ if (isImage) {
         model: "ByteDance/Seedance-1.0-lite",
         seconds: 8
       });
-      // remove spinner bot message from session
-        const s = getCurrentSession();
-        s.messages.pop();
-        saveSessions();
-
       
       video.controls = true;
       video.autoplay = true;
@@ -1590,6 +1580,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
