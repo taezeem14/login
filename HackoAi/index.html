@@ -12,6 +12,10 @@
 <script src="https://js.puter.com/v2/"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"
+onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true},{left: '\\(', right: '\\)', display: false}]});"></script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Smooch+Sans:wght@100..900&display=swap');
@@ -1299,32 +1303,33 @@ function render(role, content, saveIt = true) {
 
   /* CODE BLOCK TOOLS */
   if (window.hljs) {
-    d.querySelectorAll("pre code").forEach(block => {
-      hljs.highlightElement(block);
+  d.querySelectorAll("pre code").forEach(block => {
+    hljs.highlightElement(block);
+    const pre = block.parentElement;
 
-      const pre = block.parentElement;
+    // collapse button
+    const collapseBtn = document.createElement("button");
+    collapseBtn.className = "collapse-btn";
+    collapseBtn.textContent = "▼";
+    collapseBtn.onclick = () => {
+      pre.classList.toggle("collapsed");
+      collapseBtn.textContent = pre.classList.contains("collapsed") ? "▶" : "▼";
+    };
 
-      const collapseBtn = document.createElement("button");
-      collapseBtn.className = "collapse-btn";
-      collapseBtn.textContent = "▼";
-      collapseBtn.onclick = () => {
-        pre.classList.toggle("collapsed");
-        collapseBtn.textContent = pre.classList.contains("collapsed") ? "▶" : "▼";
-      };
+    // copy button
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "copy-btn";
+    copyBtn.textContent = "COPY";
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(block.textContent);
+      copyBtn.textContent = "COPIED";
+      setTimeout(() => copyBtn.textContent = "COPY", 1000);
+    };
 
-      const copyBtn = document.createElement("button");
-      copyBtn.className = "copy-btn";
-      copyBtn.textContent = "COPY";
-      copyBtn.onclick = () => {
-        navigator.clipboard.writeText(block.textContent);
-        copyBtn.textContent = "COPIED";
-        setTimeout(() => copyBtn.textContent = "COPY", 1000);
-      };
-
-      pre.appendChild(collapseBtn);
-      pre.appendChild(copyBtn);
-    });
-  }
+    pre.appendChild(collapseBtn);
+    pre.appendChild(copyBtn);
+  });
+}
 
   const t = document.createElement("div");
   t.className = "timestamp";
@@ -1338,6 +1343,14 @@ function render(role, content, saveIt = true) {
   return d;
 }
 
+if (window.renderMathInElement) {
+  renderMathInElement(d, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "\\(", right: "\\)", display: false}
+    ]
+  });
+}
   
 /* ===== TYPEWRITER ===== */
 // GLOBAL: typewriter bot streamer
@@ -1584,4 +1597,5 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
