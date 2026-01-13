@@ -759,16 +759,6 @@ async function clearPuter() {
   alert("Don't Get Greedy , Now Enjoy 💀");
   location.reload();
 }
-  
-  const script = document.createElement("script");
-script.src = "https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js";
-script.onload = () => {
-  console.log("Highlight.js loaded!");
-  // initialize syntax highlighting if needed
-  document.querySelectorAll("pre code").forEach(block => hljs.highlightElement(block));
-};
-document.head.appendChild(script);
-
 
 const chat=document.getElementById("chat");
 const input=document.getElementById("input");
@@ -1616,3 +1606,4 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
