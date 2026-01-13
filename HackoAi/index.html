@@ -1546,10 +1546,7 @@ try {
         data.choices?.[0]?.message?.content ||
         "💀 Empty response from DeepSeek";
      
-      // remove spinner bot message from session
-const s = getCurrentSession();
-s.messages.pop();
-saveSessions();
+      
       loading.remove();
       await streamBotInChunks(answer);
       isGenerating = false;
@@ -1593,6 +1590,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
