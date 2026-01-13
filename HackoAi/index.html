@@ -1533,14 +1533,27 @@ saveMessage("bot", { type: "video", src: video.src });
     /* ================= TEXT ================= */
     else {
       const model = document.getElementById("textModel")?.value || "deepseek/deepseek-r1-0528:free";
+		
+const session = getCurrentSession();
+
+const messages = session.messages.map(m => ({
+  role: m.role === "bot" ? "assistant" : "user",
+  content: m.content
+}));
+
+// push the NEW user message
+messages.push({
+  role: "user",
+  content: prompt
+});
 
 const res = await fetch("https://hackoai-worker.tariqmtaezeem.workers.dev", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    text: prompt,
-    model: model
-  })
+  model: model,
+  messages: messages
+})
 });
       const text = await res.text();
 
@@ -1600,6 +1613,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
