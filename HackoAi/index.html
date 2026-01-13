@@ -1424,7 +1424,7 @@ async function send() {
   const session = getCurrentSession();
   const shouldAutoTitle =
   !session.autoTitled &&
-  session.messages.filter(m => m.role === "user").length === 1 &&
+  session.messages.filter(m => m.role === "user").length === 0 &&
   !prompt.startsWith("/img") &&
   !prompt.startsWith("/vid");
 
@@ -1580,6 +1580,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
