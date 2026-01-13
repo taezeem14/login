@@ -1541,11 +1541,9 @@ try {
   throw new Error("Server returned invalid response");
 }
 
-      
-
       const answer =
-        data.choices?.[0]?.message?.content ||
-        "💀 Empty response from ${textModel}"
+  data.choices?.[0]?.message?.content ||
+  `💀 Empty response from ${model}`;
      
       
       loading.remove();
@@ -1591,32 +1589,3 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
