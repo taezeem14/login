@@ -1271,6 +1271,16 @@ function render(role, content, saveIt = true) {
   } 
   else {
     d.innerHTML = marked.parse(preprocess(String(content)));
+    
+    if (window.renderMathInElement) {
+  renderMathInElement(d, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "\\(", right: "\\)", display: false }
+    ]
+  });
+}
+
   }
 
   /* USER ACTIONS */
@@ -1597,5 +1607,6 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
