@@ -648,6 +648,16 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
         <option value="gemini-3-pro-image-preview">Nano Banana (Gemini Image)</option>
         </select>
       </div>
+        <div class="select-wrap">
+  <select id="textModel">
+    <option value="openrouter/auto">Auto (Best Free)</option>
+    <option value="meta-llama/llama-3.3-70b-instruct:free">LLaMA 3.3 70B</option>
+    <option value="deepseek/deepseek-r1:free">DeepSeek R1 (Reasoning)</option>
+    <option value="google/gemini-2.0-flash-exp:free">Gemini Flash 2.0</option>
+    <option value="meta-llama/llama-3.1-8b-instruct:free">LLaMA 3.1 8B (Fast)</option>
+    <option value="mistralai/mistral-nemo:free">Mistral Nemo</option>
+    </select>
+       </div>
       </div>
     </header>
 
@@ -667,6 +677,20 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
 <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
 
 <script>
+const textModelSelect = document.getElementById("textModel");
+const MODEL_KEY = "hackoai_text_model";
+
+// load saved model
+const savedModel = localStorage.getItem(MODEL_KEY);
+if (savedModel) {
+  textModelSelect.value = savedModel;
+}
+
+// save on change
+textModelSelect.addEventListener("change", () => {
+  localStorage.setItem(MODEL_KEY, textModelSelect.value);
+});
+  
 if (!window.marked) {
   const m = document.createElement("script");
   m.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
@@ -1480,11 +1504,16 @@ saveMessage("bot", { type: "video", src: video.src });
 
     /* ================= TEXT ================= */
     else {
-      const res = await fetch("https://hackoai-worker.tariqmtaezeem.workers.dev", {
+      const model = document.getElementById("textModel")?.value || "openrouter/auto";
+
+const res = await fetch("https://hackoai-worker.tariqmtaezeem.workers.dev", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ text: prompt })
-  });
+  body: JSON.stringify({
+    text: prompt,
+    model: model
+  })
+});
       const text = await res.text();
 
 let data;
@@ -1500,7 +1529,11 @@ try {
       const answer =
         data.choices?.[0]?.message?.content ||
         "💀 Empty response from DeepSeek";
-      
+     
+      // remove spinner bot message from session
+const s = getCurrentSession();
+s.messages.pop();
+saveSessions();
       loading.remove();
       await streamBotInChunks(answer);
       isGenerating = false;
@@ -1544,6 +1577,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
