@@ -1271,18 +1271,17 @@ function render(role, content, saveIt = true) {
   } 
   else {
     d.innerHTML = marked.parse(preprocess(String(content)));
-    
+	  
+    // Render LaTeX in this message div
     if (window.renderMathInElement) {
-  renderMathInElement(d, {
-    delimiters: [
-      { left: "$$", right: "$$", display: true },
-      { left: "\\(", right: "\\)", display: false }
-    ]
-  });
-}
-
+      renderMathInElement(d, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\(", right: "\\)", display: false }
+      ]
+    });
   }
-
+}
   /* USER ACTIONS */
   if (role === "user") {
     const actions = document.createElement("div");
@@ -1351,15 +1350,6 @@ function render(role, content, saveIt = true) {
 
   if (saveIt) saveMessage(role, content);
   return d;
-}
-
-if (window.renderMathInElement) {
-  renderMathInElement(d, {
-    delimiters: [
-      {left: "$$", right: "$$", display: true},
-      {left: "\\(", right: "\\)", display: false}
-    ]
-  });
 }
   
 /* ===== TYPEWRITER ===== */
@@ -1607,6 +1597,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
