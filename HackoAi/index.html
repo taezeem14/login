@@ -1509,7 +1509,7 @@ saveMessage("bot", { type: "video", src: video.src });
 
     /* ================= TEXT ================= */
     else {
-      const model = document.getElementById("textModel")?.value || "openrouter/auto";
+      const model = document.getElementById("textModel")?.value || "deepseek/deepseek-r1-0528:free";
 
 const res = await fetch("https://hackoai-worker.tariqmtaezeem.workers.dev", {
   method: "POST",
@@ -1533,7 +1533,7 @@ try {
 
       const answer =
         data.choices?.[0]?.message?.content ||
-        "💀 Empty response from DeepSeek";
+        "💀 Empty response from ("textModel")";
      
       
       loading.remove();
@@ -1579,6 +1579,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
