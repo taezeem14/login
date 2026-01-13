@@ -823,7 +823,6 @@ function saveSessions() {
     }
   }
 
-  localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
   localStorage.setItem(CURRENT_KEY, currentId);
   renderHistory();
   updateHeaderTitle();
@@ -1354,7 +1353,6 @@ async function streamBotInChunks(fullText, chunkSize = 50) {
 
     // live update
     session.messages[botIndex].content = renderedText;
-    localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
 
     await new Promise(r => setTimeout(r, 15));
       saveSessions();
@@ -1456,7 +1454,7 @@ if (isImage) {
     disable_safety_checker: true
   })
   .then(img => {
-    
+    loading.remove();
     isGenerating = false;
     const div = document.createElement("div");
     div.className = "msg bot";
@@ -1490,6 +1488,7 @@ if (isImage) {
         seconds: 8
       });
       
+      loading.remove();
       video.controls = true;
       video.autoplay = true;
       video.loop = true;
@@ -1580,6 +1579,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
