@@ -666,13 +666,23 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
       </div>
         <div class="select-wrap">
   <select id="textModel">
-    <option value="openrouter/auto">Auto (Best Free)</option>
-    <option value="meta-llama/llama-3.3-70b-instruct:free">LLaMA 3.3 70B</option>
-    <option value="deepseek/deepseek-r1-0528:free">DeepSeek R1 (Reasoning)</option>
-    <option value="google/gemini-2.0-flash-exp:free">Gemini Flash 2.0</option>
-    <option value="meta-llama/llama-3.1-8b-instruct:free">LLaMA 3.1 8B (Fast)</option>
-    <option value="mistralai/mistral-nemo:free">Mistral Nemo</option>
-    </select>
+  <option value="openrouter/auto">Auto (Best Free)</option>
+
+  <!-- Strong Large Models (Free) -->
+  <option value="meta-llama/llama-3-8b-instruct:free">LLaMA 3 8B (Free)</option>  
+  <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (Free)</option>  
+  <option value="mistralai/mixtral-8x7b-instruct:free">Mixtral 8x7B (Free)</option>  
+  <option value="qwen/qwen-3-235b-a22b:free">Qwen 3 235B (Free)</option>  
+
+  <!-- Reasoning / Specialized -->
+  <option value="deepseek/deepseek-r1-0528:free">DeepSeek R1 (Reasoning)</option>  
+  <option value="deepseek/deepseek-chat-v3-0324:free">DeepSeek Chat V3 (Free)</option>  
+
+  <!-- Weird but Useful Fast Options -->
+  <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash Exp (Free)</option>  
+  <option value="openchat/openchat-3.5-0106:free">OpenChat 3.5 (Free)</option>  
+  <option value="nousresearch/nous-capybara-7b:free">Nous Capybara 7B (Free)</option>
+</select>
        </div>
       </div>
     </header>
@@ -1580,6 +1590,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
