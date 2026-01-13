@@ -1353,6 +1353,7 @@ async function streamBotInChunks(fullText, chunkSize = 50) {
 
     // live update
     session.messages[botIndex].content = renderedText;
+    localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
 
     await new Promise(r => setTimeout(r, 15));
       saveSessions();
@@ -1579,6 +1580,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
