@@ -703,6 +703,17 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
 <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
 
 <script>
+function renderMath(d) {
+  if (window.renderMathInElement) {
+    renderMathInElement(d, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "\\(", right: "\\)", display: false }
+      ]
+    });
+  }
+}
+
 const textModelSelect = document.getElementById("textModel");
 const MODEL_KEY = "hackoai_text_model";
 
@@ -1271,16 +1282,7 @@ function render(role, content, saveIt = true) {
   } 
   else {
     d.innerHTML = marked.parse(preprocess(String(content)));
-	  
-    // Render LaTeX in this message div
-    if (window.renderMathInElement) {
-      renderMathInElement(d, {
-        delimiters: [
-          { left: "$$", right: "$$", display: true },
-          { left: "\\(", right: "\\)", display: false }
-      ]
-    });
-  }
+	renderMath(d);
 }
   /* USER ACTIONS */
   if (role === "user") {
@@ -1368,6 +1370,7 @@ async function streamBotInChunks(fullText, chunkSize = 50) {
     const chunk = fullText.slice(i, i + chunkSize);
     renderedText += chunk;
     d.innerHTML = marked.parse(preprocess(renderedText));
+	renderMath(d);
     chat.scrollTop = chat.scrollHeight;
 
     // live update
@@ -1597,6 +1600,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
