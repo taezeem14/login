@@ -1642,27 +1642,34 @@ goToPuter.addEventListener("click", () => {
 });
 
 async function generateTitle(userPrompt, botReply) {
-  const res = await fetch("https://hackoai-worker.tariqmtaezeem.workers.dev", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      text: `
+  try {
+    const res = await fetch("https://hackoai-worker.tariqmtaezeem.workers.dev", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: `
 Create a short chat title (3–5 words).
 No quotes. No emojis. No "Chat Title"
 
 User: ${userPrompt}
 Assistant: ${botReply}
-      `.trim()
-    })
-  });
+        `.trim()
+      })
+    });
 
-  const data = await res.json();
+    if (!res.ok) throw new Error("Title API error: " + res.status);
 
-  return (
-    data.choices?.[0]?.message?.content
-      ?.replace(/["\n]/g, "")
-      ?.slice(0, 40)
-  ) || "New Chat";
+    const data = await res.json();
+
+    // Safe fallback
+    const rawTitle = data.choices?.[0]?.message?.content || "New Chat";
+    const cleanTitle = rawTitle.replace(/["'\n]/g, "").trim().slice(0, 40);
+
+    return cleanTitle || "New Chat";
+  } catch (err) {
+    console.error("Title generation failed:", err);
+    return "New Chat";
+  }
 }
 
 async function send() {
@@ -1732,7 +1739,7 @@ async function send() {
         loading.remove();
         isGenerating = false;
         console.error(err);
-        render("bot", "**Image gen failed 💀**");
+        render("bot", "**Image gen failed 💀 ,**", err);
       });
     }
     else if (isVideo) {
@@ -1817,21 +1824,19 @@ async function send() {
       isGenerating = false;
       
       if (shouldAutoTitle) {
-        const title = await generateTitle(firstUserPrompt, answer);
-        session.title = title;
-        session.autoTitled = true;
-        saveSessions();
-      }
-
+  generateTitle(firstUserPrompt, answer)
+    .then(title => {
+      const session = getCurrentSession();
+      session.title = title;
+      session.autoTitled = true;
+      saveSessions();
       updateHeaderTitle();
-    }
-  } catch (err) {
-    loading.remove();
-    isGenerating = false;
-    console.error(err);
-    render("bot", "**Network error 💀**");
-  }
+    })
+    .catch(err => {
+      console.error("Auto-title fallback:", err);
+    });
 }
+
 
 function toggleTheme() {
   document.body.classList.toggle("dark");
@@ -1853,6 +1858,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
