@@ -22,7 +22,16 @@
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Smooch+Sans:wght@100..900&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+	box-sizing:border-box;
+	margin:0;
+	padding:0;
+	transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+}
 
 :root{
   --bg:#f4f4f5; --panel:#fff; --chat:#f9fafb;
@@ -67,6 +76,12 @@ body{
   flex-direction:column;
   position: relative;
   transition: transform 0.3s ease, width 0.3s ease;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(15,23,42,0.85),
+      rgba(2,6,23,0.98)
+    );
 }
 
 .sidebar-header{
@@ -124,11 +139,13 @@ body{
   display:flex;justify-content:space-between;
   align-items:center;transition:all 0.2s;
   position:relative;
+  background: transparent;
 }
 
 .history-item:hover{
   background:var(--chat);border-color:var(--border);
   transform: translateX(3px);
+  background: rgba(255,255,255,0.04);
 }
 
 .history-item.active{
@@ -217,6 +234,13 @@ select,button.toggle{
   flex:1;padding:16px;overflow-y:auto;
   display:flex;flex-direction:column;gap:16px;
   background:var(--chat);position:relative;
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(37,99,235,0.06),
+      transparent 40%
+    ),
+    var(--chat);
 }
 
 .msg{
@@ -229,6 +253,8 @@ select,button.toggle{
   box-shadow:
     0 8px 24px rgba(0,0,0,0.35),
     inset 0 0 0 1px rgba(255,255,255,0.04);
+ border-radius: 16px;
+  backdrop-filter: blur(6px);
 }
 
 .msg:hover .msg-actions{opacity:1;}
@@ -254,6 +280,9 @@ select,button.toggle{
     #2563eb,
     #1d4ed8
   );
+	box-shadow:
+    0 10px 30px rgba(37,99,235,0.45),
+    inset 0 0 0 1px rgba(255,255,255,0.08);
 }
 .bot{
 	align-self:flex-start;background:var(--bot);
@@ -263,6 +292,9 @@ select,button.toggle{
     rgba(15,23,42,0.95),
     rgba(2,6,23,0.95)
   );
+	box-shadow:
+    0 10px 30px rgba(0,0,0,0.45),
+    inset 0 0 0 1px rgba(255,255,255,0.05);
 }
 
 .msg a{color: var(--link);text-decoration: underline;}
@@ -1821,4 +1853,5 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
