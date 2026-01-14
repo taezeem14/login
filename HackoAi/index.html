@@ -677,24 +677,6 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
     ">Create / Upgrade Account</button>
   </div>
 
-	<div id="jupyterPanel" class="panel hidden">
-  <div class="panel-header">
-    <span>📓 Jupyter (Python)</span>
-    <button onclick="toggleJupyter()">✕</button>
-  </div>
-  <textarea id="pyCell" placeholder="print('hello bro')"></textarea>
-  <button onclick="runPython()">▶ Run</button>
-  <pre id="pyOut"></pre>
-</div>
-
-	<div id="vscodePanel" class="panel hidden">
-  <div class="panel-header">
-    <span>🧑‍💻 VS Code</span>
-    <button onclick="toggleVSCode()">✕</button>
-  </div>
-  <div id="editor" style="height:100%;"></div>
-</div>
-
 
   <div class="sidebar" id="sidebar">
     <button class="menu-close-btn" onclick="toggleSidebar()">✕</button>
@@ -716,6 +698,23 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
         <span id="headerTitle" ondblclick="editTitle()">HackoAI</span>
       </div>
       <div class="controls">
+		  <div id="jupyterPanel" class="panel hidden">
+  <div class="panel-header">
+    <span>📓 Jupyter (Python)</span>
+    <button onclick="toggleJupyter()">✕</button>
+  </div>
+  <textarea id="pyCell" placeholder="print('hello bro')"></textarea>
+  <button onclick="runPython()">▶ Run</button>
+  <pre id="pyOut"></pre>
+</div>
+
+	<div id="vscodePanel" class="panel hidden">
+  <div class="panel-header">
+    <span>🧑‍💻 VS Code</span>
+    <button onclick="toggleVSCode()">✕</button>
+  </div>
+  <div id="editor" style="height:100%;"></div>
+</div>
         <button class="toggle" onclick="exportChat()">💾</button>
         <button class="toggle" onclick="copyAll()">📋</button>
         <button class="toggle" onclick="clearChat()">🗑️</button>
@@ -1833,5 +1832,6 @@ function toggleVSCode() {
 </script>
 </body>
 </html>
+
 
 
