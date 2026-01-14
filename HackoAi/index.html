@@ -1587,6 +1587,31 @@ async function send() {
   let prompt = input.value.trim();
   if (!prompt) return;
 
+	// ===== DEV COMMANDS =====
+
+// VS CODE
+if (prompt.startsWith("/code ")) {
+  toggleVSCode();
+  if (editor) {
+    editor.setValue(prompt.slice(6));
+  }
+  input.value = "";
+  charCounter.textContent = "0 chars";
+  isGenerating = false;
+  return;
+}
+
+// JUPYTER / PYTHON
+if (prompt.startsWith("/py ")) {
+  toggleJupyter();
+  document.getElementById("pyCell").value = prompt.slice(4);
+  input.value = "";
+  charCounter.textContent = "0 chars";
+  isGenerating = false;
+  return;
+}
+
+
   isGenerating = true;
   lastUserPrompt = prompt;
 
@@ -1805,20 +1830,8 @@ function toggleVSCode() {
   document.getElementById("vscodePanel").classList.toggle("hidden");
 }
 
-	if (prompt.startsWith("/code ")) {
-  toggleVSCode();
-  editor.setValue(prompt.slice(6));
-  return;
-}
-
-
-if (prompt.startsWith("/py ")) {
-  toggleJupyter();
-  document.getElementById("pyCell").value = prompt.slice(4);
-  return;
-}
-
 </script>
 </body>
 </html>
+
 
