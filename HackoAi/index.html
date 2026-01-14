@@ -793,6 +793,49 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
   );
 }
 
+/* ===== FINAL HORIZONTAL SCROLL KILL ===== */
+
+/* Contain math overflow */
+.katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+}
+
+/* Prevent math from forcing layout wider */
+.katex {
+  max-width: 100%;
+}
+
+/* Hard-stop any rogue width expansion */
+.msg,
+.msg * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Prevent long strings from nuking layout */
+.msg {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.katex-display::-webkit-scrollbar {
+  height: 6px;
+}
+
+.katex-display::-webkit-scrollbar-track {
+  background: #020617;
+  border-radius: 6px;
+}
+
+.katex-display::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border-radius: 6px;
+}
+
+
 </style>
 </head>
 
@@ -1856,6 +1899,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
