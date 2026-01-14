@@ -10,8 +10,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://js.puter.com/v2/"></script>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
@@ -677,7 +675,6 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
     ">Create / Upgrade Account</button>
   </div>
 
-
   <div class="sidebar" id="sidebar">
     <button class="menu-close-btn" onclick="toggleSidebar()">✕</button>
     <div class="sidebar-header">
@@ -698,23 +695,6 @@ body.dark #chat::-webkit-scrollbar-thumb {background-color: #2563eb;border: 2px 
         <span id="headerTitle" ondblclick="editTitle()">HackoAI</span>
       </div>
       <div class="controls">
-		  <div id="jupyterPanel" class="panel hidden">
-  <div class="panel-header">
-    <span>📓 Jupyter (Python)</span>
-    <button onclick="toggleJupyter()">✕</button>
-  </div>
-  <textarea id="pyCell" placeholder="print('hello bro')"></textarea>
-  <button onclick="runPython()">▶ Run</button>
-  <pre id="pyOut"></pre>
-</div>
-
-	<div id="vscodePanel" class="panel hidden">
-  <div class="panel-header">
-    <span>🧑‍💻 VS Code</span>
-    <button onclick="toggleVSCode()">✕</button>
-  </div>
-  <div id="editor" style="height:100%;"></div>
-</div>
         <button class="toggle" onclick="exportChat()">💾</button>
         <button class="toggle" onclick="copyAll()">📋</button>
         <button class="toggle" onclick="clearChat()">🗑️</button>
@@ -1586,33 +1566,6 @@ async function send() {
   let prompt = input.value.trim();
   if (!prompt) return;
 
-	// ===== DEV COMMANDS =====
-
-// VS CODE
-if (prompt.startsWith("/code ")) {
-  toggleVSCode();
-  if (editor) {
-    editor.setValue(prompt.slice(6));
-  }
-  input.value = "";
-  charCounter.textContent = "0 chars";
-  isGenerating = false;
-  return;
-}
-
-// JUPYTER / PYTHON
-if (prompt.startsWith("/py ")) {
-  toggleJupyter();
-  const code = prompt.slice(4);
-document.getElementById("pyCell").value = code;
-setTimeout(runPython, 50);
-  input.value = "";
-  charCounter.textContent = "0 chars";
-  isGenerating = false;
-  return;
-}
-
-
   isGenerating = true;
   lastUserPrompt = prompt;
 
@@ -1790,50 +1743,6 @@ getCurrentSession().messages.forEach(m=>render(m.role,m.content,false));
 renderHistory();
 updateHeaderTitle();
 
-	let pyodideReady = false;
-let pyodide;
-
-async function loadPyodideOnce() {
-  if (pyodideReady) return;
-  pyodide = await loadPyodide({
-    stdout: msg => {
-      document.getElementById("pyOut").textContent += msg + "\n";
-    },
-    stderr: msg => {
-      document.getElementById("pyOut").textContent += msg + "\n";
-    }
-  });
-  pyodideReady = true;
-}
-
-function toggleJupyter() {
-  document.getElementById("jupyterPanel").classList.toggle("hidden");
-}
-
-	let editor;
-
-require.config({ paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs" }});
-require(["vs/editor/editor.main"], () => {
-  editor = monaco.editor.create(document.getElementById("editor"), {
-    value: "// sup dawg\nconsole.log('LET HIM COOK 🔥');",
-    language: "javascript",
-    theme: "vs-dark",
-    automaticLayout: true
-  });
-});
-
-function toggleVSCode() {
-  const panel = document.getElementById("vscodePanel");
-  panel.classList.toggle("hidden");
-  setTimeout(() => {
-    if (editor) editor.layout();
-  }, 50);
-}
-
 </script>
 </body>
 </html>
-
-
-
-
