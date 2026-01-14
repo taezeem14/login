@@ -1647,8 +1647,8 @@ async function generateTitle(userPrompt, botReply) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       text: `
-Create a short chat title (3–6 words).
-No quotes. No emojis.
+Create a short chat title (3–5 words).
+No quotes. No emojis. No "Chat Title"
 
 User: ${userPrompt}
 Assistant: ${botReply}
@@ -1667,7 +1667,7 @@ Assistant: ${botReply}
 
 async function send() {
   if (isGenerating) {
-    console.warn("Generation already in progress");
+    alert("Generation already in progress");
     return;
   }
   let prompt = input.value.trim();
@@ -1853,5 +1853,6 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
