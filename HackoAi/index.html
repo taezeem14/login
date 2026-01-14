@@ -33,6 +33,22 @@
     transform 0.2s ease;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
+	.container,
+.app,
+#chat {
+  overflow-x: hidden;
+}
+
+	pre, code {
+  max-width: 100%;
+  word-break: break-word;
+}
+
+
 :root{
   --bg:#f4f4f5; --panel:#fff; --chat:#f9fafb;
   --border:#e5e7eb; --user:#2563eb; --bot:#e5e7eb;
@@ -40,9 +56,26 @@
   --link:#2563eb; --sidebar:#f9fafb;
 }
 
-pre::-webkit-scrollbar {height: 6px;}
-pre::-webkit-scrollbar-track {background: var(--chat);border-radius: 3px;}
-pre::-webkit-scrollbar-thumb {background: #2563eb;border-radius: 3px;}
+/* ===== CODE BLOCK SCROLLBAR (HORIZONTAL) ===== */
+pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+  background: #020617;
+  border-radius: 8px;
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,0.4);
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
 button.toggle:hover {background: rgba(239,68,68,.15);border-color: #ef4444;}
 
 body.dark{
@@ -1823,6 +1856,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
