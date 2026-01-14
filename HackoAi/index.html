@@ -1677,6 +1677,7 @@ async function send() {
     alert("Generation already in progress");
     return;
   }
+
   let prompt = input.value.trim();
   if (!prompt) return;
 
@@ -1693,13 +1694,14 @@ async function send() {
 
   input.value = "";
   charCounter.textContent = "0 chars";
-  
+
   const isImage = prompt.startsWith("/img ");
   const isVideo = prompt.startsWith("/vid ");
 
   if (isImage || isVideo) prompt = prompt.slice(5);
 
   render("user", prompt);
+
   const loading = document.createElement("div");
   loading.className = "msg bot";
   loading.innerHTML = "<div class='spinner'></div>";
@@ -1710,59 +1712,37 @@ async function send() {
     if (isImage) {
       const model = document.getElementById("imageModel").value;
 
-      puter.ai.txt2img(prompt, {
-        model,
-        disable_safety_checker: true
-      })
-      .then(img => {
-        loading.remove();
-        isGenerating = false;
-        const div = document.createElement("div");
-        div.className = "msg bot";
-
-        img.classList.add("ai-img");
-
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-          canvas.getContext("2d").drawImage(img, 0, 0);
-          const base64 = canvas.toDataURL();
-          saveMessage("bot", { type: "image", src: base64 });
-        };
-
-        div.appendChild(img);
-        chat.appendChild(div);
-        chat.scrollTop = chat.scrollHeight;
-      })
-      .catch(err => {
-        loading.remove();
-        isGenerating = false;
-        console.error(err);
-        render("bot", "**Image gen failed 💀 ,**", err);
-      });
-    }
-    else if (isVideo) {
-      const video = await puter.ai.txt2vid(prompt, {
-        model: "ByteDance/Seedance-1.0-lite",
-        seconds: 8
-      });
-      
+      const img = await puter.ai.txt2img(prompt, { model, disable_safety_checker: true });
       loading.remove();
       isGenerating = false;
-      
-      video.controls = true;
-      video.autoplay = true;
-      video.loop = true;
-      video.style.maxWidth = "100%";
-      video.style.borderRadius = "12px";
+
+      img.classList.add("ai-img");
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext("2d").drawImage(img, 0, 0);
+        const base64 = canvas.toDataURL();
+        saveMessage("bot", { type: "image", src: base64 });
+      };
+
+      const div = document.createElement("div");
+      div.className = "msg bot";
+      div.appendChild(img);
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    } 
+    else if (isVideo) {
+      const video = await puter.ai.txt2vid(prompt, { model: "ByteDance/Seedance-1.0-lite", seconds: 8 });
+      loading.remove();
+      isGenerating = false;
 
       const blob = await fetch(video.src).then(r => r.blob());
       const reader = new FileReader();
       reader.onloadend = () => {
         const div = document.createElement("div");
         div.className = "msg bot";
-        
+
         const savedVideo = document.createElement("video");
         savedVideo.src = reader.result;
         savedVideo.controls = true;
@@ -1770,73 +1750,58 @@ async function send() {
         savedVideo.loop = true;
         savedVideo.style.maxWidth = "100%";
         savedVideo.style.borderRadius = "12px";
-        
+
         div.appendChild(savedVideo);
         chat.appendChild(div);
         chat.scrollTop = chat.scrollHeight;
-        
+
         saveMessage("bot", { type: "video", src: reader.result });
       };
       reader.readAsDataURL(blob);
-    }
+    } 
     else {
       const model = document.getElementById("textModel")?.value || "deepseek/deepseek-r1-0528:free";
-		
-      const session = getCurrentSession();
 
       const messages = session.messages
         .filter(m => typeof m.content === "string")
-        .map(m => ({
-          role: m.role === "bot" ? "assistant" : "user",
-          content: m.content
-        }));
+        .map(m => ({ role: m.role === "bot" ? "assistant" : "user", content: m.content }));
 
-      messages.push({
-        role: "user",
-        content: prompt
-      });
+      messages.push({ role: "user", content: prompt });
 
       const res = await fetch("https://hackoai-worker.tariqmtaezeem.workers.dev", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: model,
-          messages: messages
-        })
+        body: JSON.stringify({ model: model, messages: messages })
       });
-      
+
       const text = await res.text();
-
       let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        console.error("Non-JSON response:", text);
-        throw new Error("Server returned invalid response");
-      }
+      try { data = JSON.parse(text); } catch { throw new Error("Server returned invalid response"); }
 
-      const answer =
-        data.choices?.[0]?.message?.content ||
-        `💀 Empty response from ${model}`;
-     
+      const answer = data.choices?.[0]?.message?.content || `💀 Empty response from ${model}`;
       loading.remove();
       await streamBotInChunks(answer);
       isGenerating = false;
-      
-      if (shouldAutoTitle) {
-  generateTitle(firstUserPrompt, answer)
-    .then(title => {
-      const session = getCurrentSession();
-      session.title = title;
-      session.autoTitled = true;
-      saveSessions();
-      updateHeaderTitle();
-    })
-    .catch(err => {
-      console.error("Auto-title fallback:", err);
-    });
-}
 
+      if (shouldAutoTitle) {
+        try {
+          const title = await generateTitle(firstUserPrompt, answer);
+          session.title = title;
+          session.autoTitled = true;
+          saveSessions();
+          updateHeaderTitle();
+        } catch (err) {
+          console.error("Auto-title fallback:", err);
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Send error:", err);
+    isGenerating = false;
+    loading.remove();
+    render("bot", "**Error generating response 💀** " + err.message);
+  }
+}
 
 function toggleTheme() {
   document.body.classList.toggle("dark");
@@ -1858,6 +1823,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
