@@ -1603,7 +1603,9 @@ if (prompt.startsWith("/code ")) {
 // JUPYTER / PYTHON
 if (prompt.startsWith("/py ")) {
   toggleJupyter();
-  document.getElementById("pyCell").value = prompt.slice(4);
+  const code = prompt.slice(4);
+document.getElementById("pyCell").value = code;
+setTimeout(runPython, 50);
   input.value = "";
   charCounter.textContent = "0 chars";
   isGenerating = false;
@@ -1793,20 +1795,15 @@ let pyodide;
 
 async function loadPyodideOnce() {
   if (pyodideReady) return;
-  pyodide = await loadPyodide();
+  pyodide = await loadPyodide({
+    stdout: msg => {
+      document.getElementById("pyOut").textContent += msg + "\n";
+    },
+    stderr: msg => {
+      document.getElementById("pyOut").textContent += msg + "\n";
+    }
+  });
   pyodideReady = true;
-}
-
-async function runPython() {
-  await loadPyodideOnce();
-  const code = document.getElementById("pyCell").value;
-  const out = document.getElementById("pyOut");
-  try {
-    const res = await pyodide.runPythonAsync(code);
-    out.textContent = res ?? "";
-  } catch (e) {
-    out.textContent = e;
-  }
 }
 
 function toggleJupyter() {
@@ -1826,12 +1823,17 @@ require(["vs/editor/editor.main"], () => {
 });
 
 function toggleVSCode() {
-  document.getElementById("vscodePanel").classList.toggle("hidden");
+  const panel = document.getElementById("vscodePanel");
+  panel.classList.toggle("hidden");
+  setTimeout(() => {
+    if (editor) editor.layout();
+  }, 50);
 }
 
 </script>
 </body>
 </html>
+
 
 
 
