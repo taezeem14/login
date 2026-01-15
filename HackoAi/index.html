@@ -1723,14 +1723,18 @@ async function generateTitle(userPrompt, botReply) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        text: `
-Create a short chat title (3–5 words).
-No quotes. No emojis. No "Chat Title"
-
-User: ${userPrompt}
-Assistant: ${botReply}
-        `.trim()
-      })
+  model: "deepseek/deepseek-r1-0528:free",
+  messages: [
+    {
+      role: "system",
+      content: "Create a short chat title (3–5 words). No quotes. No emojis."
+    },
+    {
+      role: "user",
+      content: `User: ${userPrompt}\nAssistant: ${botReply}`
+    }
+  ]
+})
     });
 
     if (!res.ok) throw new Error("Title API error: " + res.status);
@@ -1899,6 +1903,7 @@ updateHeaderTitle();
 </script>
 </body>
 </html>
+
 
 
 
